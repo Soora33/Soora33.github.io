@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>docker容器内部设置vim镜像</title>
+      <link href="/posts/6ba6364a.html"/>
+      <url>/posts/6ba6364a.html</url>
+      
+        <content type="html"><![CDATA[<p>aaa我们有时候要进入到Docker容器内部修改一些文件，vi用不了，vim更不用说了…这次主要分享下容器内部设置vim镜像，从之前的10分钟缩短到现在的1分钟。</p><p><strong>1.首先备份一下我们之前的源</strong></p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp -a /etc/apt/sources.list /etc/apt/sources.list.bak</span><br></pre></td></tr></table></figure><p><strong>2.换成163的镜像</strong></p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -i &#x27;s#http://deb.debian.org#http://mirrors.163.com#g&#x27; /etc/apt/sources.list</span><br></pre></td></tr></table></figure><p><strong>3.直接安装vim就可以</strong></p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt-get update</span><br><span class="line">apt-get install -y vim</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 教程 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Docker </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>K8s搭建</title>
       <link href="/posts/1cd02af7.html"/>
       <url>/posts/1cd02af7.html</url>
