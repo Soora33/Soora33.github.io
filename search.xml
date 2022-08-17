@@ -110,6 +110,31 @@
     
     
     <entry>
+      <title>清理服务器上的Docker日志</title>
+      <link href="/posts/37a34086.html"/>
+      <url>/posts/37a34086.html</url>
+      
+        <content type="html"><![CDATA[<p>平时我们Docker运行产生的一些日志文件，莫名其妙的占满了服务器内存，我的服务器都是3天一清。这次分享下清理Docker日志的脚本。</p><p>直接找个地方，创建sh文件，例如 vim cleanDockerlog.sh 复制下面代码</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/sh</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim:sw=4:ts=4:et</span></span><br><span class="line">set -e</span><br><span class="line"></span><br><span class="line">DOCKER_STORAGE_PATH=&quot;/var/lib/docker&quot;</span><br><span class="line"></span><br><span class="line">echo &quot;INFO:======== start clean docker containers logs ========&quot;</span><br><span class="line"></span><br><span class="line">logs_file=$(find $&#123;DOCKER_STORAGE_PATH&#125;/containers/ -name *-json.log)  #容器日志文件</span><br><span class="line"></span><br><span class="line">for log_name in $&#123;logs_file&#125;</span><br><span class="line">do</span><br><span class="line">    echo &quot;INFO:clean logs : $&#123;log_name&#125;&quot;</span><br><span class="line">    &gt; $&#123;log_name&#125;</span><br><span class="line">done</span><br><span class="line"></span><br><span class="line">echo &quot;INFO:======== end clean docker containers logs ========&quot;</span><br></pre></td></tr></table></figure><p>复制权限 执行就可以</p><blockquote><p>chmod -R 700 cleanDockerlog.sh</p><p>.&#x2F;cleanDockerlog.sh</p></blockquote><p>每次清理完都少了近50%，还是可以的</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 服务器 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Docker </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>linux常用的插件</title>
       <link href="/posts/414b6727.html"/>
       <url>/posts/414b6727.html</url>
