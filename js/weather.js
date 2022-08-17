@@ -17,8 +17,8 @@ WIDGET = {
     "fixed": "true",
     "vertical": "center",
     "horizontal": "center",
-    "left": "125",
-    "top": "20",
+    "left": "200",
+    "top": "17",
     "key": "3c6f09584a7343d98bbf75f8b74ac88e"
   }
 }
