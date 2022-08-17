@@ -184,9 +184,9 @@
             
             <tag> MySQL </tag>
             
-            <tag> 索引 </tag>
-            
             <tag> 数据库 </tag>
+            
+            <tag> 索引 </tag>
             
         </tags>
       
@@ -355,6 +355,31 @@
             <tag> linux </tag>
             
             <tag> 服务器 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>超好用的Docker可视化管理工具</title>
+      <link href="/posts/5e59c1d5.html"/>
+      <url>/posts/5e59c1d5.html</url>
+      
+        <content type="html"><![CDATA[<p>今天给大家介绍一个超好用的一款Docker容器可视化工具。叫Portainer，中文名叫集装箱起重机。听名字就知道是个狠角色。<del>把Docker吊起来</del></p><p>首先来看下页面 非常的大气简洁，有一些功能很实用，像什么重启，停止，删除…</p><p><img src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208171506556.png" alt="image-20220817150610464"></p><p><img src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208171506128.png" alt="image-20220817150630076"></p><h2 id="1-安装镜像"><a href="#1-安装镜像" class="headerlink" title="1.安装镜像"></a>1.安装镜像</h2><p>​我们先创建portainer的目录，这里我选择&#x2F;usr&#x2F;local&#x2F;docker下 创建portainer文件夹</p><p>下载最新版的portainer</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull portainer/portainer</span><br></pre></td></tr></table></figure><p>因为portainer默认英文，我们需要下载汉化包，进入portainer的目录(这一步很重要,不然汉化包挂载不到容器内部)</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd portainer</span><br><span class="line">wget https://labx.me/dl/4nat/public.zip --2022-05-01 23:09:00--  https://labx.me/dl/4nat/public.zip</span><br></pre></td></tr></table></figure><p>解压汉化包(这里如果报错，是因为没有下载unzip解压软件)</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">解压</span></span><br><span class="line">unzip public.zip</span><br></pre></td></tr></table></figure><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">没有下载unzip请执行</span></span><br><span class="line">yum install -y unzip</span><br></pre></td></tr></table></figure><p>编写安装脚本,将容器内部9000端口挂载到宿主机的9000上</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&lt; EOF &gt;&gt; startPortainer.sh</span><br><span class="line">docker run -d \</span><br><span class="line">--restart=always \</span><br><span class="line">--name portainer \</span><br><span class="line">-p 9000:9000 \</span><br><span class="line">-v /var/run/docker.sock:/var/run/docker.sock \</span><br><span class="line">-v /usr/local/docker/portainer/data:/data \</span><br><span class="line">-v /usr/local/docker/portainer/public:/public \</span><br><span class="line">portainer/portainer:latest</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure><p>复制权限执行</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod -R 700 startPortainer.sh</span><br></pre></td></tr></table></figure><p>浏览器访问 IP:9000就可以访问进去，初次选择local模式就行</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 软件安利 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> portainer </tag>
             
         </tags>
       
