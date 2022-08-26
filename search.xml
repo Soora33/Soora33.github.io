@@ -8,7 +8,7 @@
       <link href="/posts/4f26befa.html"/>
       <url>/posts/4f26befa.html</url>
       
-        <content type="html"><![CDATA[<p>OSI七层模型</p><h1 id="网络分层"><a href="#网络分层" class="headerlink" title="网络分层"></a><strong>网络分层</strong></h1><h2 id="OSI七层模型"><a href="#OSI七层模型" class="headerlink" title="OSI七层模型"></a><strong>OSI七层模型</strong></h2><p><img src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208261934081.png" alt="image-20220826193433007"></p><p>七层模型的结构清晰，每一层该干什么事</p>]]></content>
+        <content type="html"><![CDATA[<h1 id="网络分层"><a href="#网络分层" class="headerlink" title="网络分层"></a><strong>网络分层</strong></h1><h2 id="OSI七层模型"><a href="#OSI七层模型" class="headerlink" title="OSI七层模型"></a><strong>OSI七层模型</strong></h2><p><img src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208261934081.png" alt="image-20220826193433007"></p><p>七层模型的结构清晰，每一层该干什么事。降低复杂性，统一标准，模块化。</p><ol><li>物理层：很重要的一层，最底层，就像一个地基。保证双向传输，双向通讯。</li><li>数据链路层：①提供MAC地址；②负责数据帧的转发；③提供错误检查机制（交换机会对数据进行检测，如果发现有丢失，就会通知发送方重传数据）</li><li>网络层：①提供IP地址；②连接不同的媒介类型；③根据路由器运行的不同选择最佳路径；④在选择好的路径上路由数据包</li><li>传输层：传输层提供了端口号的概念。建立端口到端口的通信</li><li>会话层：在用于程序之间建立并维护会话连接</li><li>表示层：负责数据加密。比如对称加密、非对称加密…</li><li>应用层：给用户提供一个接口，用户可以通过用于程序来使用6层模型</li></ol><p>七层模型虽然结构清晰，但是比较复杂并且不怎么实用，运行效率偏低。于是四层模型出现了</p><h2 id="OSI四层模型"><a href="#OSI四层模型" class="headerlink" title="OSI四层模型"></a><strong>OSI四层模型</strong></h2><p><img src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208262142685.png" alt="image-20220826214235624"></p><p>应用层：提供两个终端设备上的应用程序信息交换的服务，定义消息交换的格式，将消息交给传输层传输</p><p>传输层：使用TCP和UDP协议对消息进行传输</p><p>网络层：给分组交换网上不同主机提供通信服务</p><p>物理层：瞌睡..待续..</p>]]></content>
       
       
       <categories>
