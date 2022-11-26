@@ -1,8 +1,8 @@
 ---
 title: docker下安装并使用Jenkins
+abbrlink: e7a56fe2
 date: 2022-10-28 20:19:12
 tags:
-
 ---
 
 ### 拉取镜像
@@ -49,3 +49,5 @@ docker logs jenkins
 url看自己，我用的是默认的
 
 ![image-20221029153242691](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202210291532868.png)
+
+待续...
