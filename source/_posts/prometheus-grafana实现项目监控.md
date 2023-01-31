@@ -10,8 +10,6 @@ abbrlink: 5020f3ea
 date: 2023-01-27 13:18:48
 ---
 
-j
-
 ## 介绍
 
 prometheus，也叫普罗米修斯。是目前很流行的开源项目监控框架，在项目中引入即可收集项目的信息，然后通过服务器来完成上传。
@@ -144,7 +142,7 @@ docker run -d --name=grafana -p 3000:3000 --ip=47.101.207.184 grafana/grafana
 
 <img src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208081729707.png" alt="image-20220808172942654" style="zoom:67%;" />
 
-3. 设置好该数据源名称 配置好对应的普罗米修斯地址
+3. 设置好该数据源名称 配置好对应的普罗米修斯地址 http://IP:9090
 
 <img src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208081730611.png" alt="image-20220808173014548" style="zoom:67%;" />
 
@@ -154,4 +152,4 @@ docker run -d --name=grafana -p 3000:3000 --ip=47.101.207.184 grafana/grafana
 
    <img src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202301271418667.png" alt="image-20230127141825584" style="zoom:50%;" />
 
-   至此，普罗米修斯就全部配置完成。直接在grafana可以查看到数据
+6. 回到主界面 查看我们的JVM控制中心。至此，普罗米修斯就全部配置完成
