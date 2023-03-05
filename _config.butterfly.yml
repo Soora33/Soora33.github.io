@@ -461,7 +461,7 @@ footer:
   owner:
     enable: true
     since: 2019
-  custom_text: Welcome to the Java world<br><a href="http://beian.miit.gov.cn"><img class="icp-icon" src="https://static.dy208.cn/o_1dfilp8ruo521thr1hvf18ji17soa.png"><span>晋ICP备2022007182</span></a>
+  custom_text: Welcome to the Java world<br><a href="http://beian.miit.gov.cn"><img class="icp-icon" src="https://static.dy208.cn/o_1dfilp8ruo521thr1hvf18ji17soa.png"><span>晋ICP备2022007182号</span></a>
   copyright: false # Copyright of theme and framework
 
 # Analysis
