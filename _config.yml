@@ -105,7 +105,7 @@ theme: butterfly
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
-  #type: git
+  type: git
   #repo: root@47.116.9.28:/data/repo/sora33Hexo.git
   repo: git@github.com:Soora33/Soora33.github.io.git
   branch: master
