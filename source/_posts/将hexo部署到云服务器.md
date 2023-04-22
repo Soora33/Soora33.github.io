@@ -1,9 +1,9 @@
 ---
-title: 将hexo部署到云服务器
+title: (待更新)将hexo部署到云服务器
 abbrlink: a6738ead
 date: 2023-03-12 10:12:26
 tags:
-hide: true
+hidden: true
 ---
 
 ## 安装Git和nginx

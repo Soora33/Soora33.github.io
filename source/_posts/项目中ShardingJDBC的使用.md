@@ -1,10 +1,10 @@
 ---
-title: 项目中ShardingJDBC的使用
+title: (待更新)项目中ShardingJDBC的使用
 tags:
   - ShardingJDBC
   - 分库分表
 categories: 教程
-Hide: true
+Hidden: true
 abbrlink: cff84f64
 date: 2023-04-22 08:41:55
 ---
