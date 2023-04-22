@@ -19,23 +19,23 @@ rabbitmq是一个基于Erlang语言开发且非常好用的一款开源的amqp(�
 
 ## **三大亮点**
 
-- **解耦:**一个系统调用多个模块。互相调用的关系很复杂很麻烦。如果没有消息队列，每当一个新业务接入，我们都要在主系统调用新接口。使用消息队列，我们只需要关心是否送达。服务自己订阅想要的信息即可
-- **削锋:**高峰时期对服务器的压力。比如下单的时候，大量的数据直接访问过来根本没时间处理，不妨先把他们存到消息队列里，让服务器不至于崩溃的同时尽可能的快速执行队列中的任务
-- **异步:**对于不是特别重要的一些请求。假如说有一个操作，要调用三个服务，a200ms，b300ms，c200ms，如果不使用mq的话，用户至少要等700ms，使用mq的话，直接发送3条消息到mq里，大大减少了耗时时间，同时用户体验也上个档次
+- 解耦:一个系统调用多个模块。互相调用的关系很复杂很麻烦。如果没有消息队列，每当一个新业务接入，我们都要在主系统调用新接口。使用消息队列，我们只需要关心是否送达。服务自己订阅想要的信息即可
+- 削锋:高峰时期对服务器的压力。比如下单的时候，大量的数据直接访问过来根本没时间处理，不妨先把他们存到消息队列里，让服务器不至于崩溃的同时尽可能的快速执行队列中的任务
+- 异步:对于不是特别重要的一些请求。假如说有一个操作，要调用三个服务，a200ms，b300ms，c200ms，如果不使用mq的话，用户至少要等700ms，使用mq的话，直接发送3条消息到mq里，大大减少了耗时时间，同时用户体验也上个档次
 
 说完优点，来说说缺点
 
 ## 三大缺点
 
-- **系统可用性降低:**mq也会出问题，没使用mq之前，a系统调用b系统，b系统调用c系统。这样虽然耦合高，但是可以正常工作。如果把mq引进来，把数据都发给mq，让mq来调用abc三个系统，万一mq挂掉了。这整个业务都崩了
-- **系统复杂度提高:**引入mq需要考虑消息是否重复消费，确保消息不丢失，还要确保消息的顺序性
-- **数据不一致性:**如果一个数据被重复消费，破坏了幂等性，也就发生了数据的不一致性
+- 系统可用性降低:mq也会出问题，没使用mq之前，a系统调用b系统，b系统调用c系统。这样虽然耦合高，但是可以正常工作。如果把mq引进来，把数据都发给mq，让mq来调用abc三个系统，万一mq挂掉了。这整个业务都崩了
+- 系统复杂度提高:引入mq需要考虑消息是否重复消费，确保消息不丢失，还要确保消息的顺序性
+- 数据不一致性:如果一个数据被重复消费，破坏了幂等性，也就发生了数据的不一致性
 
 这次来介绍一下6大模式以及用法。
 
 ## **简单模式(点对点)**
 
-![img](https://img-blog.csdnimg.cn/00a2325eace94078a9d3759f23963c22.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151354249.png)
 
 ### 模式特点
 
@@ -145,11 +145,15 @@ class RabbitmqdemoApplicationTests {
 }
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)控制台打印消息![img](https://img-blog.csdnimg.cn/a941c07e767c4c24908067505256d887.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)成功消费2条信息 
+控制台打印消息
+
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151354375.png)
+
+成功消费2条信息 
 
 ## **工作模式**
 
-![img](https://img-blog.csdnimg.cn/c56a2fe9636940179171e3d81c957d1a.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151354291.png)
 
 ### 模式特点
 
@@ -223,11 +227,11 @@ public class Producer {
 
 ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)启动测试类进行测试，由于mq处理太快。有2条信息在测试类里打印出来了。不影响我们的结果
 
-![img](https://img-blog.csdnimg.cn/c87266200ac8449d90e7ff0efbfa5f89.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==) 可以看到6条消息被轮询的分发到了2个消费者当中![img](https://img-blog.csdnimg.cn/b83a8441e58946198acfdb2ac6a3f86f.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151355926.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==) 可以看到6条消息被轮询的分发到了2个消费者当中![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151355726.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 ## **发布订阅模式**/广播模式(fanout)
 
-![img](https://img-blog.csdnimg.cn/e9bb016fa23b46d992183c1c7b5612b9.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151355547.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 ### 模式特点
 
@@ -298,7 +302,7 @@ public class RabbitmqConfig {
 
  通过控制台可以看到交换机绑定了2个队列
 
-![img](https://img-blog.csdnimg.cn/d48ebba498b34191af41cdeeb81cee67.jpeg)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151355092.jpeg)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
  生产者创建一个队列并发送一条消息。第一个参数是交换机名称，第二个routingKey设置为""，因为发布订阅不需要指定路由的key。第三个参数为要发送的消息内容
 
@@ -368,11 +372,11 @@ class RabbitmqdemoApplicationTests {
 }
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)![img](https://img-blog.csdnimg.cn/0bfa64e092f8448192e66715f35bdfea.jpeg)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)![img](https://img-blog.csdnimg.cn/aafdc4cd7d3d4996a2bc9d88799c5a2f.jpeg)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)发送成功，并且成功监听到消息
+![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151355828.jpeg)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151355602.jpeg)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)发送成功，并且成功监听到消息
 
 ## **路由模式(Direct)**
 
-![img](https://img-blog.csdnimg.cn/d4aa03bb8643429ebcb5fab3e8ba4e1b.jpeg)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151355234.jpeg)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 ### 模式特点
 
@@ -386,7 +390,7 @@ class RabbitmqdemoApplicationTests {
 
 这里我花了一幅图来帮助大家理解。我们有ABC三个队列，三个队列的routingKey分别为sms,email,phone。这个时候我们的路由交换机有一条消息，这个消息指定了路由key为phone。那么这条消息只有路由key为phone的队列C会收到。 
 
-![img](https://img-blog.csdnimg.cn/2da09eab745b457cb8870801985d0673.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)代码实现也非常简单。
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151355146.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)代码实现也非常简单。
 
 首先是生产者,初始化一个Direct类型的交换机。创建2个队列并且绑定到交换机上。和发布订阅模式不一样的是多了一个with，用来设置RoutingKey。
 
@@ -497,13 +501,13 @@ public class Producer {
 
 ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)启动测试类，可以看到只有sms队列收到了消息。email没有反应，证明我们的路由成功了。
 
-## ![img](https://img-blog.csdnimg.cn/b8c3b08485e24479b659a14640690411.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+## ![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151355257.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
-## ![img](https://img-blog.csdnimg.cn/42f3f31b8c0c4cf89e64469b2b315a68.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+## ![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151355300.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 ## **主题模式(通配符模式)**
 
-![img](https://img-blog.csdnimg.cn/733bbb28e0c14ca4983772d2588fb506.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151355649.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 ###  模式特点
 
@@ -516,7 +520,7 @@ public class Producer {
 
 如下图，我们的规则设置为
 
-![img](https://img-blog.csdnimg.cn/7123d8f2c100403aa2b82a2be0c91cfe.jpeg)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151355939.jpeg)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 email队列匹配*.email.*，那么我们的交换机转发消息时的RoutingKey只能为xxx.email.xxx(xxx可以为任意长度)，必须是有且只能有1级。比如com.email.com，这个规则就可以被正确的转发到email队列中
 
@@ -667,7 +671,7 @@ class RabbitmqdemoApplicationTests {
 
 ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)因为我们的两个路由RoutingKey都可以匹配到对应的队列，所以成功路由到对应的队列当中进行消费
 
-![img](https://img-blog.csdnimg.cn/85e147452cb14a6d8f2849247dccc242.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202304151356671.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 ## **6.PRC模式**
 

@@ -92,7 +92,9 @@ yum -y remove docker docker-common docker-selinux docker-engine
 yum -y install docker-ce docker-ce-cli containerd.io
 ```
 
-​        3.3 启动docker
+​    PS：这里需要注意一下，我在23年4月22的时候安装docker的时候，发现有个依赖一直下不下来，需要我们手动改一下文件，文件地是/etc/yum.repos.d/docker-ce.repo。将[docker-ce-test]中的enabled=0改为enabled=1就可以了
+
+​	   3.3 启动docker
 
 ```shell
 systemctl start docker
