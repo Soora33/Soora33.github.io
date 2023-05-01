@@ -13,7 +13,7 @@ timezone: Asia/Shanghai
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://33sora.com
+url: http://33sora.com
 #url: https://sora33.gitee.io
 permalink: posts/:abbrlink.html
 abbrlink:
