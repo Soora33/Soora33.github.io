@@ -93,7 +93,7 @@ spring:
         driverClassName: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://127.0.0.1:3306/sora33?serverTimezone=UTC
         username: root
-        password: LYproject33
+        password: root
     # 规则配置
     rules:
       sharding:
