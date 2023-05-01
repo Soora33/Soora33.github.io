@@ -64,13 +64,13 @@ date: 2022-08-09 08:10:12
 
 ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)这样我们的消息如果发送到交换机，就会执行[消息发送到交换机成功](签收成功是后面消费者里的消息签收机制，现在不用在意)
 
-![img](https://img-blog.csdnimg.cn/236ddcb286014b10ba7f1e0ca8cadf6b.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==) 现在我们测试一下，我在交换机名字后面加上一个字符串，现在这个交换机是不存在的。看看会发生什么
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011456665.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==) 现在我们测试一下，我在交换机名字后面加上一个字符串，现在这个交换机是不存在的。看看会发生什么
 
 ```java
 rabbitTemplate.convertAndSend(RabbitConstant.DIRECT_EXCHANGE+"sora33","sms",tel);
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)![img](https://img-blog.csdnimg.cn/71b218c13c184864a029ee0bfb43550b.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)发送到交换机失败了，执行了我们失败里的回调。这里我们就可以看出这个confirm机制的作用了。它是用来确保确保我们的消息是否到达了交换机。到达了执行ack，没有到达执行nack。我们可以在发送失败的方法里加入自己的逻辑。比如加入到发送失败的表中，或者尝试重新发送...
+![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011456479.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)发送到交换机失败了，执行了我们失败里的回调。这里我们就可以看出这个confirm机制的作用了。它是用来确保确保我们的消息是否到达了交换机。到达了执行ack，没有到达执行nack。我们可以在发送失败的方法里加入自己的逻辑。比如加入到发送失败的表中，或者尝试重新发送...
 
 消息的发送确认机制讲完之后。接下来我们来看一下交换机到队列要如何保证消息的可靠性。
 
@@ -103,7 +103,7 @@ setMandatory是用来设置如果没有找到队列，是丢弃还是执行retur
 
 ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)现在我给一个不存在的路由key发送。交换机肯定是找不到对应的队列的 我们的交换机目前只绑定了路由为sms的一个队列 
 
-![img](https://img-blog.csdnimg.cn/5928fe860bf6448ca20269f7dcdc70d6.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011456679.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 ```java
 rabbitTemplate.convertAndSend(RabbitConstant.DIRECT_EXCHANGE,"smssss",tel);
@@ -111,7 +111,7 @@ rabbitTemplate.convertAndSend(RabbitConstant.DIRECT_EXCHANGE,"smssss",tel);
 
 ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==) 可以看到，虽然消息进入了交换机，但是找不到对应的队列，执行ReturnCallback回调函数
 
-![img](https://img-blog.csdnimg.cn/a627f00e7463454ba4303a3e22743c73.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)生产者方面的一些机制讲完之后。接下来我们来看消费者中的消息签收机制以及如何重新发送失败的消息。
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011456317.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)生产者方面的一些机制讲完之后。接下来我们来看消费者中的消息签收机制以及如何重新发送失败的消息。
 
 因为rabbitMQ默认是签收消息的。我们先把签收模式设置为手动签收 顺便配置一下我们的重发配置
 
@@ -163,13 +163,13 @@ rabbitTemplate.convertAndSend(RabbitConstant.DIRECT_EXCHANGE,"smssss",tel);
     }
 ```
 
-![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)![img](https://img-blog.csdnimg.cn/c433dfaea670400fb61491505029f6c5.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011456409.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 >  当我们给int c = 1/a 改为 c = 1/a++
 
 这个时候第一次会进入catch块。第二次因为a自增。所以不会抛出异常，签收成功
 
-![img](https://img-blog.csdnimg.cn/b2b4bdf723364dee9a6b57aaa5728179.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011456127.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 ##  四.总结
 

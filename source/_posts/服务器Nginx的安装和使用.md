@@ -22,7 +22,7 @@ date: 2021-03-07 20:10:48
 >
 > http://nginx.org/en/download.html
 
- ![img](https://img-blog.csdnimg.cn/32546b5d407e44cd9109c4e60ddb6e35.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+ ![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011451254.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 然后使用xftp或者rz上传到我们的服务器
 
@@ -36,7 +36,7 @@ date: 2021-03-07 20:10:48
 >
 > **chmod +x configure**
 
- ![img](https://img-blog.csdnimg.cn/fabdd13e04474cf9b86dcab5af27d69b.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+ ![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011451991.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 ## 2.安装nginx所需要的环境
 
@@ -93,7 +93,7 @@ yum -y install pcre  pcre-devel zlib  zlib-devel openssl openssl-devel
 
 **如果想要修改端口号可以去conf下的nginx.conf中修改，修改完成后去sbin文件夹中执行****./nginx -s reload****重启nginx**
 
-![img](https://img-blog.csdnimg.cn/7e897f6f29fe48d782829c0c6ef82607.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011451886.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 ## 4.基础命令
 
@@ -131,7 +131,7 @@ yum -y install pcre  pcre-devel zlib  zlib-devel openssl openssl-devel
 
 首先说一下什么是负载均衡。负载均衡就是将所有的请求给分发到不同的服务器。可以减少服务器压力。同时隐藏了真实服务器的ip。具体的说就是对外暴露出一个端口。nginx来代理监听这个端口。然后使用负载均衡配置的服务来进行对应的转发操作。下面来看一些简单的例子。
 
-![img](https://img-blog.csdnimg.cn/img_convert/efbefc73731019caf3cbe928c89fd8a6.jpeg)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011451823.jpeg)
 
 ![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
@@ -139,15 +139,15 @@ yum -y install pcre  pcre-devel zlib  zlib-devel openssl openssl-devel
 
 负载均衡配置全部写在nginx.conf的http模块中
 
- ![img](https://img-blog.csdnimg.cn/5087d89370a2486b9c9e5dbba6f57988.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+ ![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011452377.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
  上面配置的效果是我们访问7788这个端口号。nginx会将请求按照默认的轮询方式分配到80和9101端口上。进行一个转发跳转。
 
 我们访问7788端口，第一次成功进入nginx的主页面。 
 
-![img](https://img-blog.csdnimg.cn/2ae70b157dbd4cb6aaa4cd037e4562b3.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)第二次访问7788端口，访问到docker可视化页面，端口号为9101，同样成功。
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011452506.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)第二次访问7788端口，访问到docker可视化页面，端口号为9101，同样成功。
 
-![img](https://img-blog.csdnimg.cn/8e37b960a8154092854f3f593b4dd35a.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)以上就是一个简单的负载均衡的例子。下面来说说负载均衡的模式
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011452330.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)以上就是一个简单的负载均衡的例子。下面来说说负载均衡的模式
 
 ## 6.负载均衡三大模式 
 
@@ -155,19 +155,19 @@ yum -y install pcre  pcre-devel zlib  zlib-devel openssl openssl-devel
 
 负载均衡默认使用的就是轮询。将请求按照顺序分配到服务上。
 
-![img](https://img-blog.csdnimg.cn/0f00cf7e669144f6b65eef839138f59b.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011452226.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 ### 2.权重
 
 通过weight指定权重值。比如下图有5个请求进来。有4个会被分配到9101上
 
-![img](https://img-blog.csdnimg.cn/f73da7ac971940a38fa9ef689fa2e1d9.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011452043.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 ### 3.IP散列
 
 通过对访问的IP的hash结果来决定转发到哪个服务上。固定IP会固定被转发到对应的服务上
 
-![img](https://img-blog.csdnimg.cn/285d0a735fa947b2977fc26dcb97cac0.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011452133.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 ##  7.踩坑点
 

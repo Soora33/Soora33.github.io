@@ -245,13 +245,13 @@ Sharding的配置我把它分为三大类，分别是`逻辑表的配置``分表
         driverClassName: com.mysql.cj.jdbc.Driver
         url: jdbc:mysql://127.0.0.1:3306/sora33?serverTimezone=UTC
         username: root
-        password: LYproject33
+        password: root
       ds1:
         type: com.alibaba.druid.pool.DruidDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://150.158.80.68:3306/sora33?serverTimezone=UTC
+        url: jdbc:mysql://150.158.xx.xx:3306/sora33?serverTimezone=UTC
         username: root
-        password: LYproject33
+        password: root
     # 规则配置
     rules:
       sharding:
@@ -312,7 +312,7 @@ ds1的user02表的数据：
 
 功能上实现后我们就可以分析一下实现流程了。
 
-![img](https://img2020.cnblogs.com/blog/822135/202009/822135-20200912222920726-1038922352.png)
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011448457.jpeg)
 
 这里我先把官方的解释放出来
 

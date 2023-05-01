@@ -21,7 +21,7 @@ cover: https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0817/wallhaven-76rk
 
 ## 简单原理
 
-![img](https://img-blog.csdnimg.cn/a6540fab58c44095a8fdbe9d859957c3.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011449662.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 布隆过滤器本质上是一个二进制数组，元素的值不是1就是0. 当我们存一个商品id为10的商品，假设我们经过三次哈希，存的数组下标为1，3，7，就将这三个下标的元素改为1.这样每次访问redis之前，先访问布隆过滤器。查询id为10的商品的时候，经过布隆过滤器的哈希算法，获取到该商品对应的下标是1，3，7。那么，如果这三个数组的下标对应的元素都为1 则表示存在该商品，放行这次请求。如果有一个为0，则不存在该商品。
 
@@ -97,18 +97,18 @@ class RetailUserApplicationTests {
 
  误判了1004个，符合我们设置的0.01误判率。
 
-![img](https://img-blog.csdnimg.cn/ec9e4cbaea8648dd92d8b6988327abf3.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011450440.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 但是，误判率并不是设置的越小越好。设置的越小，进行的哈希次数就越多。接下来，我们来看下例子。比如我这里设置的0.01，就经过了7次哈希 
 
-![img](https://img-blog.csdnimg.cn/e2e60081bd494256a61fb7bc74b3a312.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011449763.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
  接下来我们测试将误差值改为0.000001，从原来的7次哈希变为了20次哈希
 
-![img](https://img-blog.csdnimg.cn/f133f5ec11df46a693ca6f517826323e.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)编辑
+![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011449957.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)
 
 时间效率也从200增到了700+
- ![img](https://img-blog.csdnimg.cn/27ef629bca5241d59a65ccb032f5254b.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)​编辑
+ ![img](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011449818.png)![点击并拖拽以移动](data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==)​
 
  所以我们得出结论。要取一个适当的值来确定误差值。就和hashmap的负载因子是0.75一样 为1哈希冲突太大，为0.5冲突是少了，但是空间利用率下降了。
 

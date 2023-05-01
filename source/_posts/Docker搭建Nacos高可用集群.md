@@ -41,7 +41,7 @@ docker的安装可以参考我之前的一篇博客
 > 查看docker镜像
 > docker images
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/05046996f43d4543a736805ddb77acb8.png)
+![在这里插入图片描述](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011453901.png)
 ## 3.创建nacos的持久化数据库
 我们只使用三台服务器中其中一台的数据库就可以，这里使用第一台服务器来作为持久化数据库。
 直接使用可视化工具创建一个数据库，名字叫nacos_config
@@ -270,12 +270,12 @@ INSERT INTO roles (username, role) VALUES ('nacos', 'ROLE_ADMIN');
 ```
 
 持久化数据库以及表就创建完成了。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/e1ee6148455941bb939aae5977c1de0c.png)
+![在这里插入图片描述](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011453350.png)
 
 ## 4.修改nacos配置文件 
 在 /usr/local/ 下创建nacos文件夹
 nacos文件夹中继续创建config文件夹
-![在这里插入图片描述](https://img-blog.csdnimg.cn/9e8f7594473f41c7bc9dc7847e4a8b0f.png)
+![在这里插入图片描述](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011453054.png)
 进入config文件夹，编写nacos配置文件,端口号默认是8848，我们只需要修改最后几行的数据库配置来做持久化。
 
 > vim application.properties
@@ -564,13 +564,13 @@ nacos/nacos-server:v2.0.4
 >./startNacos.sh
 
 在集群管理中心可以看到我们的搭建成功(这里我只用了2台服务器作为演示)
-![nacos集群](https://img-blog.csdnimg.cn/fb7369cf3e424fb99ed8d57e6da6c387.png)
+![nacos集群](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011453778.png)
 如果nacos启动失败，先查看内存是否足够
 
 > free -h
 
   nacos还挺吃内存的，我们只关心第一行最后一个，如果大于500M，排除内存原因。
-  ![在这里插入图片描述](https://img-blog.csdnimg.cn/36bc3646b03849c29d19f3ce043ec9a6.png)
+  ![在这里插入图片描述](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011453916.png)
 第二个原因可能是mysql版本过高，比如8.0的，或者曾经有安装过8.0的版本。因为没有卸载干净。只需要在application.properties连接数据库的地方加上useSSL=false即可
 
 ## 6.安装nginx
@@ -628,4 +628,4 @@ stream {
 
 > ./nginx -s reload
 
-通过负载均衡的端口号访问nacos控制台成功并且项目也是可以正常使用的。将原本的8848改为设置的负载均衡端口号(我设置的是8521)![在这里插入图片描述](https://img-blog.csdnimg.cn/2f5b1d62d17c4bd5a63a0f0191e1e7eb.png)以上就是docker+nacos+nginx完成的集群搭建。哪怕某一个nacos挂了，也会自动切换切换节点。实现了高可用高性能。
+通过负载均衡的端口号访问nacos控制台成功并且项目也是可以正常使用的。将原本的8848改为设置的负载均衡端口号(我设置的是8521)![在这里插入图片描述](https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202305011453884.png)以上就是docker+nacos+nginx完成的集群搭建。哪怕某一个nacos挂了，也会自动切换切换节点。实现了高可用高性能。
