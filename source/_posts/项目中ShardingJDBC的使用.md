@@ -134,7 +134,7 @@ mybatis-plus:
     map-underscore-to-camel-case: true
 ```
 
-Sharding的配置我把它分为三大类，分别是`逻辑表的配置``分表/分库策略``id生成策略`
+Sharding的配置我把它分为三大类，分别是`逻辑表的配置`分表/分库策略`id生成策略`
 
 这三个都要配置在 rules下的 sharding中
 

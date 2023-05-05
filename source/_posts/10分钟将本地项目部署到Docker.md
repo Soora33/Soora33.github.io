@@ -1,10 +1,11 @@
 ---
 title: 10分钟将本地项目部署到Docker
-date: 2023-05-02 11:59:43
 tags:
   - Docker
   - 运维
 categories: 教程
+abbrlink: 78034db1
+date: 2023-05-02 11:59:43
 ---
 
 ## 前言
