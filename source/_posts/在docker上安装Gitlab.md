@@ -43,10 +43,6 @@ vi /etc/gitlab/gitlab.rb
 #加入如下
 #gitlab访问地址
 external_url 'http://IP:port'
-#ssh
-gitlab_rails['gitlab_ssh_host'] = 'IP'
-#ssh连接端口
-#gitlab_rails['gitlab_shell_ssh_port'] = sshport
 
 #退出容器
 exit
