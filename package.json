@@ -17,7 +17,7 @@
     "hexo-algoliasearch": "^1.0.0",
     "hexo-cli": "^4.3.0",
     "hexo-deployer-git": "^3.0.0",
-    "hexo-generator-archive": "^1.0.0",
+    "hexo-generator-archive": "^2.0.0",
     "hexo-generator-category": "^1.0.0",
     "hexo-generator-indexed": "^1.2.1",
     "hexo-generator-search": "^2.4.3",
