@@ -1,10 +1,11 @@
 ---
 title: 关于如何让static修饰的字段动态获到取nacos的值
-date: 2023-05-25 20:21:54
 tags:
   - Nacos
 categories:
   - 踩坑记录
+abbrlink: 19304c69
+date: 2023-05-25 20:21:54
 ---
 
 ## 前言 
