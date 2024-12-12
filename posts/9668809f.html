@@ -1,0 +1,285 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Spring 基于注解使用 AOP | Sora33</title><meta name="author" content="Sora33"><meta name="copyright" content="Sora33"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="概念面向切面编程。将多个对象的公共行为抽取封装成一个可重用的模块。降低了模块之间的耦合度。同时提高了系统的可维护性。一般用于权限认证，日志等。 AOP 是基于动态代理实现的。如果要代理的对象实现了某个接口，那么 AOP 就会使用 JDK 动态代理创建对象。而没有实现接口的对象，就无法使用 JDK 动态代理。使用 Cglib 动态代理生成一个被代理的子类来作为代理。 Aspect（切面）： 切点 +">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring 基于注解使用 AOP">
+<meta property="og:url" content="http://33sora.com/posts/9668809f.html">
+<meta property="og:site_name" content="Sora33">
+<meta property="og:description" content="概念面向切面编程。将多个对象的公共行为抽取封装成一个可重用的模块。降低了模块之间的耦合度。同时提高了系统的可维护性。一般用于权限认证，日志等。 AOP 是基于动态代理实现的。如果要代理的对象实现了某个接口，那么 AOP 就会使用 JDK 动态代理创建对象。而没有实现接口的对象，就无法使用 JDK 动态代理。使用 Cglib 动态代理生成一个被代理的子类来作为代理。 Aspect（切面）： 切点 +">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0805/0805/wallhaven-5gyjw3_3840x2160.png">
+<meta property="article:published_time" content="2021-05-05T15:07:25.000Z">
+<meta property="article:modified_time" content="2023-03-25T08:29:03.344Z">
+<meta property="article:author" content="Sora33">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="Aop">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0805/0805/wallhaven-5gyjw3_3840x2160.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="http://33sora.com/posts/9668809f.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+          
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 8 || hour >= 19
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: {"appId":"1QY6GKFJYT","apiKey":"ff7af72210f9015cb3c5205c3a3824e2","indexName":"dev_home","hitsPerPage":6,"languages":{"input_placeholder":"搜索文章","hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"找到 ${hits} 条结果，耗时 ${time} 毫秒"}},
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":500,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Spring 基于注解使用 AOP',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="pokeball-loading"><div class="pokeball" id="normal"></div><div class="pokeball" id="great"></div><div class="pokeball" id="ultra"></div><div class="pokeball" id="master"></div><div class="pokeball" id="safari"></div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = 'auto'
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0817/wallhaven-g7mpj7_1920x1080.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/nayuta.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-calendar"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-wheelchair-alt"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0805/0805/wallhaven-5gyjw3_3840x2160.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/nayuta.jpg" alt="Logo"><span class="site-name">Sora33</span></a><a class="nav-page-title" href="/"><span class="site-name">Spring 基于注解使用 AOP</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-calendar"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-wheelchair-alt"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Spring 基于注解使用 AOP</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">发表于</span><time datetime="2021-05-05T15:07:25.000Z" title="发表于 2021-05-05 23:07:25">2021-05-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">787</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>2分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:300,&quot;messagePrev&quot;:&quot;距离最后更新已经过了&quot;,&quot;messageNext&quot;:&quot;天，文章内容可能已过时，如果有问题，欢迎留言反馈&quot;,&quot;postUpdate&quot;:&quot;2023-03-25 16:29:03&quot;}" hidden></div><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a><strong>概念</strong></h2><p>面向切面编程。将多个对象的公共行为抽取封装成一个可重用的模块。降低了模块之间的耦合度。同时提高了系统的可维护性。一般用于权限认证，日志等。</p>
+<p>AOP 是基于动态代理实现的。如果要代理的对象实现了某个接口，那么 AOP 就会使用 JDK 动态代理创建对象。而没有实现接口的对象，就无法使用 JDK 动态代理。使用 Cglib 动态代理生成一个被代理的子类来作为代理。</p>
+<p><code>Aspect</code>（切面）： 切点 + 通知。在什么时候，什么地方，做的什么增强</p>
+<p><code>Joint point</code>（连接点）：使用通知的一个时机，一般是方法的调用，或异常被抛出</p>
+<p><code>Pointcut</code>（切点）：通过通配、正则表达式等方式，定义了切面发生在哪里</p>
+<p><code>Advice</code>（通知）：告诉切面要做什么，什么时候开始，比如 Before、After、Around 等等</p>
+<p><code>Target</code>（目标对象）：被通知的对象</p>
+<p><code>Weaving</code>（织入）：把切面应用到目标对象，创建对象的一个过程。可以在编译时或运行时完成织入操作。</p>
+<h2 id="Spring-AOP-和-AspectJ-AOP的选择"><a href="#Spring-AOP-和-AspectJ-AOP的选择" class="headerlink" title="Spring AOP 和 AspectJ AOP的选择"></a><strong>Spring AOP 和 AspectJ AOP 的选择</strong></h2><p>Spring AOP 属于运行时增强。AspectJ 是编译时增强，Eclipse 基金会出品。SpringAOP 基于代理，而 AspectJ 是基于字节码操作。因为基于字节码操作，所以性能上，AspectJ 比 springAOP 要好上一点。切面越多效果越明显</p>
+<h2 id="几种通知"><a href="#几种通知" class="headerlink" title="几种通知"></a><strong>几种通知</strong></h2><ol>
+<li>@Before：前置通知</li>
+<li> @AfterRetunring：后置通知</li>
+<li> @Around：环绕通知</li>
+<li> @AfterThrowing：异常通知</li>
+<li> @After：最终通知</li>
+</ol>
+<p><strong>为什么选择注解的方式开发 AOP</strong></p>
+<p>先来看一下不使用注解的方式:</p>
+<p>execution (&lt;修饰符模式&gt;?&lt; 返回类型模式 &gt;&lt; 方法名模式 &gt;(&lt; 参数模式 &gt;)&lt; 异常模式 &gt;?)  这是连接点的基本语法</p>
+<p>execution (* com.sora33.aop.service.sora33Service.sora33ServiceImpl.*(..)) 这个表示切到 sora33ServiceImpl 下的所有方法</p>
+<p>再来看一下注解的方式:</p>
+<p>@Around (“@annotation (com.sora33.aop.MethodAspect)”) 只需要表明我们注解所在位置。然后就会自动匹配有这个注解的方法</p>
+<h2 id="实战"><a href="#实战" class="headerlink" title="实战"></a><strong>实战</strong></h2><p>先引入 aspectjweaver 依赖</p>
+<figure class="highlight xml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--aspect--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.aspectj<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>aspectjweaver<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>声明一个接口</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@className</span>: MethodAspect</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: AOP接口</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2021/05/05</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: Sora33</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">//　作用域</span></span><br><span class="line"><span class="meta">@Target(ElementType.METHOD)</span></span><br><span class="line"><span class="comment">//　生命周期</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MethodAspect {</span><br><span class="line"></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>写一个测试方法，加上我们刚刚声明的注解，表示这个方法需要被切入</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@MethodAspect</span></span><br><span class="line"><span class="meta">@GetMapping("/{name}")</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">test</span><span class="params">(<span class="meta">@PathVariable("name")</span> String name)</span> {</span><br><span class="line">    System.out.println(<span class="string">"调用成功"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后写一个 Aspect 类，定义 AOP 的业务逻辑</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Log4j2</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">testAop</span> {</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 环绕通知，切点是MethodAspect注解</span></span><br><span class="line">    <span class="meta">@Around("@annotation(com.sora33.aop.aspect.MethodAspect)")</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">aa</span><span class="params">(ProceedingJoinPoint joinPoint)</span> {</span><br><span class="line">        <span class="comment">// 获取类名</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">className</span> <span class="operator">=</span> joinPoint.getTarget().getClass().getSimpleName();</span><br><span class="line">        log.info(<span class="string">"类名{}"</span>, className);</span><br><span class="line">        <span class="keyword">try</span> {</span><br><span class="line">            <span class="comment">// 获取返回值</span></span><br><span class="line">            <span class="type">Object</span> <span class="variable">proceed</span> <span class="operator">=</span> joinPoint.proceed();</span><br><span class="line">            log.info(<span class="string">"返回值:"</span> + proceed);</span><br><span class="line">        } <span class="keyword">catch</span> (Throwable e) {</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        }</span><br><span class="line">        <span class="comment">// 获取参数</span></span><br><span class="line">        Object[] args = joinPoint.getArgs();</span><br><span class="line">        <span class="comment">// 参数转集合</span></span><br><span class="line">        List&lt;Object&gt; objectList = Arrays.asList(args);</span><br><span class="line">        <span class="comment">// 打印参数</span></span><br><span class="line">        objectList.forEach(a -&gt; System.out.println(objectList));</span><br><span class="line">    }</span><br><span class="line">    </span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>执行伪代码如下👇:</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">类名:TestController</span><br><span class="line">调用成功</span><br><span class="line">返回值: null</span><br><span class="line">["user"]</span><br></pre></td></tr></tbody></table></figure>
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://33sora.com/">Sora33</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://33sora.com/posts/9668809f.html">http://33sora.com/posts/9668809f.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://33sora.com" target="_blank">Sora33</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Spring/">Spring</a><a class="post-meta__tags" href="/tags/Aop/">Aop</a></div><div class="post-share"><div class="social-share" data-image="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0805/0805/wallhaven-5gyjw3_3840x2160.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/wechat.jpg" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/d2111816.html" title="自己对 JVM 的理解"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0817/wallhaven-8ordoj_1920x1080.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">自己对 JVM 的理解</div></div><div class="info-2"><div class="info-item-1">内存模型线程独占:  虚拟机栈：先进后出的 又称方法栈，线程执行方法都是创建一个栈帧，用来存储局部变量表 (存放局部变量的), 操作数栈 (后进先出的操作数栈。负责写入数据和提取数据)，动态链接 (执行常量池中的方法引用), 方法出口等信息，JVM 对栈的操作有 2 种，出栈和入栈。方法调用就是入栈。方法返回就是出栈  本地方法栈：区别是虚拟机栈为执行 Java 方法服务，而本地方法栈则为 Native 方法服务 什么是 native 方法呢 就是非 Java 方法。与 Java 环境外交互。因为 JVM 一些底层是 C 写的。比如 Thread 类中的 setPrioruty 方法   HotspotJVM 中 将本地栈和虚拟机栈合二为一的 栈是运行时单位 堆是存储的单位  程序计数器：一块较小的内存空间，是当前线程所执行的字节码的行号指令器，每条线程都要有一个独立的程序计数器，这类内存也被称为线程私有的内存。用来记录程序执行到哪一个地方，下次可以在这个地方继续执行 线程共享: 堆：java 虚拟机内存最大的一块，被所有线程共享，几乎所有线程实例都在这里分配内存。  1.7...</div></div></div></a><a class="pagination-related" href="/posts/2733575.html" title="Linux 安装 Docker 和 MySQL"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0805/0805/wallhaven-o3o26p_3840x2160.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Linux 安装 Docker 和 MySQL</div></div><div class="info-2"><div class="info-item-1">1. 安装准备 11.1 确保cenos版本是7.X  使用 uanme -a 查看 docker 内核版本 1uname -a   这里使用 cenos7 来安装 docker 11.2 安装docker运行环境  安装 docker 运行环境之前，我们先来配置一下 yum 2. 配置 yum        2.1 备份 1mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup  ​        2.2 配置国内镜像加速 1wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo  ​        2.3 生成缓存 1yum makecache  ​        2.4 安装 docker 运行环境​        		因为 docker 是基于 C 和 C++ 开发的 需要安装对应的环境 12yum -y install gccyum -y install...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/ed0abeea.html" title="SpringBoot 通过 Ajax 异步上传图片"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/spring.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2019-11-27</div><div class="info-item-2">SpringBoot 通过 Ajax 异步上传图片</div></div><div class="info-2"><div class="info-item-1">由于之前使用的是 SSM 框架，使用的是自己的 Tomcat, 换上 SpringBoot 之后 Tomcat 就成内置的了，继续用以前的方法上传都上传在了随机位置，研究了一下图片上传和预览 记录一下需要用到 2 个工具类 (工具类也是从网上下载的), 文末会附上工具类 首先我们要知道 ajax 上传需要的三个重要属性cache: 默认值 true 代表缓存 当设置为 false 的时候，再次发送请求，读的是浏览器的数据而不是之前缓存在浏览器中的数据 可以保证每次都是新的数据processData: 是否序列化数据，默认值是 true 代表将数据序列化，这里我们上传文件设置为 falsecontentType: 默认值 application/x-www-form-urlencoded 是设置我们发送给服务器的数据格式，而常用的 dataType 则是设置我们收到服务器数据的格式先来看一下前台页面，一个简单的上传图片按钮和一个下载按钮 js 中是对应的函数 12345678910111213141516171819202122&lt;html lang="en"...</div></div></div></a><a class="pagination-related" href="/posts/undefined.html" title="SpringCache 的理解与使用"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/1126/wallhaven-vqml88_3840x2160.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-11-26</div><div class="info-item-2">SpringCache 的理解与使用</div></div><div class="info-2"><div class="info-item-1">前言缓存相信各位都不陌生，作为开发中非常重要的一个组件。是解决高并发与数据库压力的第一方案，目前使用最多的是 redis 缓存中间件。但对于一些 CRUD 的缓存，还是有一些人使用的是 redisTemplate。开发中经常重复造车轮，以至于没有太多的时间去理解业务和逻辑。而 SpringCache 就出现了。只需要一行注解，几个配置，缓存的任务就完成了。我们只需要专心写逻辑就可以。使用也十分简单。本次就 SpringCache 结合当下最常用的 redis 来实践理解一下 SpringCache 的注解首先是三个常用注解  @Cacheable：获取缓存，如果获取不到缓存则执行本方法 将方法的返回值缓存到redis @CachePut：更新缓存，无论缓存是否存在，都会执行本方法，并且更新到redis @CacheEvict：删除缓存，缓存存在则删除，不存在自然不会删  下面来看看 Cacheable 注解中的值    cacheNames：可以理解为缓存容器的名字，也就是缓存要放进的地方 key：理解为redis的key就可以...</div></div></div></a><a class="pagination-related" href="/posts/d7d0e1f.html" title="使用 propertySourceLocator 来自定义属性并引入外部配置文件"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0401/wallhaven-j3doy5_3840x2160.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-06-22</div><div class="info-item-2">使用 propertySourceLocator 来自定义属性并引入外部配置文件</div></div><div class="info-2"><div class="info-item-1">接口介绍propertySourceLocator 是 Spring-cloud-context 包下的一个接口，用于定位外部数据源或者内部的自定义数据源配置。Nacos 就是通过 NacosPropertySourceLocator 类实现 propertySourceLocator 接口，来获取 nacos 的配置加载到环境中的。下面是接口定义的三个方法。这里我们需要关注 locate 这个方法。这个方法的实现依赖于我们如何去定义一个新的 propertySource 1234567891011121314151617181920212223242526272829public interface PropertySourceLocator {    PropertySource&lt;?&gt; locate(Environment environment);    default Collection&lt;PropertySource&lt;?&gt;&gt; locateCollection(Environment environment) {       ...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/nayuta.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Sora33</div><div class="author-info-description">未来无限可能</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="http://wpa.qq.com/msgrd?v=3&amp;uin=2097665736&amp;site=qq&amp;menu=yes" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="/img/sora33QR.jpg" target="_blank" title="VX"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Java/自宅警备员/nayuta单推人<br>本站主要记录自己自学的一些技术,欢迎各位一起留言讨论。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5"><span class="toc-number">1.</span> <span class="toc-text">概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Spring-AOP-%E5%92%8C-AspectJ-AOP%E7%9A%84%E9%80%89%E6%8B%A9"><span class="toc-number">2.</span> <span class="toc-text">Spring AOP 和 AspectJ AOP 的选择</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%A0%E7%A7%8D%E9%80%9A%E7%9F%A5"><span class="toc-number">3.</span> <span class="toc-text">几种通知</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E6%88%98"><span class="toc-number">4.</span> <span class="toc-text">实战</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/89e44969.html" title="hexo &amp; butterfly 升级与注意要点"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0817/wallhaven-57erm8_1920x1080.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="hexo &amp; butterfly 升级与注意要点"/></a><div class="content"><a class="title" href="/posts/89e44969.html" title="hexo &amp; butterfly 升级与注意要点">hexo &amp; butterfly 升级与注意要点</a><time datetime="2024-12-09T07:10:21.000Z" title="发表于 2024-12-09 15:10:21">2024-12-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/41ed1960.html" title="基于 ollama 从零部署大语言模型"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/wallhaven-l35j32_1920x1080.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基于 ollama 从零部署大语言模型"/></a><div class="content"><a class="title" href="/posts/41ed1960.html" title="基于 ollama 从零部署大语言模型">基于 ollama 从零部署大语言模型</a><time datetime="2024-09-27T05:33:47.000Z" title="发表于 2024-09-27 13:33:47">2024-09-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/ef6e6a13.html" title="个人对设计模式的理解与实践 (持续缓更)"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0805/0805/wallhaven-rdv5q7_3840x2160.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="个人对设计模式的理解与实践 (持续缓更)"/></a><div class="content"><a class="title" href="/posts/ef6e6a13.html" title="个人对设计模式的理解与实践 (持续缓更)">个人对设计模式的理解与实践 (持续缓更)</a><time datetime="2024-09-10T05:24:04.000Z" title="发表于 2024-09-10 13:24:04">2024-09-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/144a2659.html" title="Java21 虚拟线程的研究与使用"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0805/0805/wallhaven-6d2l9q_3840x2160.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java21 虚拟线程的研究与使用"/></a><div class="content"><a class="title" href="/posts/144a2659.html" title="Java21 虚拟线程的研究与使用">Java21 虚拟线程的研究与使用</a><time datetime="2024-08-13T01:49:33.000Z" title="发表于 2024-08-13 09:49:33">2024-08-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8cfd5cf5.html" title="gRPC 框架的学习和使用"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0817/wallhaven-dprlej_1920x1080.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="gRPC 框架的学习和使用"/></a><div class="content"><a class="title" href="/posts/8cfd5cf5.html" title="gRPC 框架的学习和使用">gRPC 框架的学习和使用</a><time datetime="2024-07-17T07:49:46.000Z" title="发表于 2024-07-17 15:49:46">2024-07-17</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0805/0805/wallhaven-5gyjw3_3840x2160.png);"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2024 By Sora33</div><div class="footer_custom_text"><a target="_blank" rel="noopener" href="http://beian.miit.gov.cn"><span>晋ICP备2022007182号</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/archives/"><i class="fa-solid fa-archive"></i><span>文章归档</span></a><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a><a class="rightMenu-item menu-link" href="/tags/"><i class="fa-solid fa-tags"></i><span>文章标签</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><a class="rightMenu-item menu-link" id="menu-radompage" href="/index.html"><i class="fa-solid fa-shoe-prints"></i><span>随便逛逛</span></a><div class="rightMenu-item" id="menu-translate"><i class="fa-solid fa-earth-asia"></i><span>繁简切换</span></div><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://sprightly-liger-8d5ebf.netlify.app/.netlify/functions/twikoo',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://sprightly-liger-8d5ebf.netlify.app/.netlify/functions/twikoo',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="algolia-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="search-wrap"><div id="algolia-search-input"></div><hr/><div id="algolia-search-results"><div id="algolia-hits"></div><div id="algolia-pagination"></div><div id="algolia-info"><div class="algolia-stats"></div><div class="algolia-poweredBy"></div></div></div></div></div><div id="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/algoliasearch/dist/lite/builds/browser.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instantsearch.js/dist/instantsearch.production.min.js"></script><script src="/js/search/algolia.js"></script></div></div></body></html>
