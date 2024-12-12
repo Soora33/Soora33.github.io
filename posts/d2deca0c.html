@@ -1,0 +1,295 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>来说说目前常用的各种加密及其对应实现 | Sora33</title><meta name="author" content="Sora33"><meta name="copyright" content="Sora33"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="加密类型加密对于特殊数据来说是很重要的，我们也在不断开发新的加密手法来保护数据不被破解。这次我想介绍下目前常用的几种加密方式与其对应的特点。最后会基于 hutool 来完成对应的加密例子，必须引入 hutool 的依赖！！ 12345&lt;dependency&gt;    &lt;groupId&gt;cn.hutool&lt;&#x2F;groupId&gt;    &lt;artifactId&amp;gt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="来说说目前常用的各种加密及其对应实现">
+<meta property="og:url" content="http://33sora.com/posts/d2deca0c.html">
+<meta property="og:site_name" content="Sora33">
+<meta property="og:description" content="加密类型加密对于特殊数据来说是很重要的，我们也在不断开发新的加密手法来保护数据不被破解。这次我想介绍下目前常用的几种加密方式与其对应的特点。最后会基于 hutool 来完成对应的加密例子，必须引入 hutool 的依赖！！ 12345&lt;dependency&gt;    &lt;groupId&gt;cn.hutool&lt;&#x2F;groupId&gt;    &lt;artifactId&amp;gt">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0401/wallhaven-3l3ed3_3840x2160.png">
+<meta property="article:published_time" content="2023-06-24T06:26:01.000Z">
+<meta property="article:modified_time" content="2023-06-24T08:55:50.688Z">
+<meta property="article:author" content="Sora33">
+<meta property="article:tag" content="加密">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0401/wallhaven-3l3ed3_3840x2160.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="http://33sora.com/posts/d2deca0c.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+          
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 8 || hour >= 19
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: {"appId":"1QY6GKFJYT","apiKey":"ff7af72210f9015cb3c5205c3a3824e2","indexName":"dev_home","hitsPerPage":6,"languages":{"input_placeholder":"搜索文章","hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"找到 ${hits} 条结果，耗时 ${time} 毫秒"}},
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":500,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '来说说目前常用的各种加密及其对应实现',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="pokeball-loading"><div class="pokeball" id="normal"></div><div class="pokeball" id="great"></div><div class="pokeball" id="ultra"></div><div class="pokeball" id="master"></div><div class="pokeball" id="safari"></div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = 'auto'
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0817/wallhaven-g7mpj7_1920x1080.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/nayuta.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-calendar"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-wheelchair-alt"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0401/wallhaven-3l3ed3_3840x2160.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/nayuta.jpg" alt="Logo"><span class="site-name">Sora33</span></a><a class="nav-page-title" href="/"><span class="site-name">来说说目前常用的各种加密及其对应实现</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-calendar"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-wheelchair-alt"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">来说说目前常用的各种加密及其对应实现</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">发表于</span><time datetime="2023-06-24T06:26:01.000Z" title="发表于 2023-06-24 14:26:01">2023-06-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%99%E7%A8%8B/">教程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:300,&quot;messagePrev&quot;:&quot;距离最后更新已经过了&quot;,&quot;messageNext&quot;:&quot;天，文章内容可能已过时，如果有问题，欢迎留言反馈&quot;,&quot;postUpdate&quot;:&quot;2023-06-24 16:55:50&quot;}" hidden></div><h2 id="加密类型"><a href="#加密类型" class="headerlink" title="加密类型"></a>加密类型</h2><p>加密对于特殊数据来说是很重要的，我们也在不断开发新的加密手法来保护数据不被破解。这次我想介绍下目前常用的几种加密方式与其对应的特点。最后会基于 <code>hutool</code> 来完成对应的加密例子，必须引入 <code>hutool</code> 的依赖！！</p>
+<figure class="highlight xml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>cn.hutool<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>hutool-all<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.8.16<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="对称加密"><a href="#对称加密" class="headerlink" title="对称加密"></a>对称加密</h3><p>对称加密是最早出现也是最简单的一种加密方式，加密和解密都是通过一个密钥去实现，具有加密解密速度快的特点，所以适合数据量大的加解密。但缺点也很明显，因为密钥是相同的，所以安全性比较低。</p>
+<blockquote>
+<p>常用的加密方式有 DES、3DES 和 AES 特点：加密解密快，安全性低</p>
+</blockquote>
+<h3 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h3><p>非对称加密则是弥补了对称加密的缺点，使用 2 个密钥对数据做处理，公钥用于加密，私钥用于解密。但非对称加密涉及到复杂的数学计算，所以加密解密的速度完全不及对称加密。</p>
+<blockquote>
+<p>常用的加密方式有 RSA、ECC、DSA、ECDSA 特点：加密解密慢，安全性高</p>
+</blockquote>
+<h3 id="散列加密"><a href="#散列加密" class="headerlink" title="散列加密"></a>散列加密</h3><p>也叫哈希加密，是一种单向函数。通过将加密的字符串通过<code>哈希算法</code>映射到固定长度的字符串，映射完成的字符串即为密文。因为是单向函数，所以该加密是不可逆的。</p>
+<blockquote>
+<p>常用的加密方式有 MD5、SHA-256、SHA-1 特点：加密解密快，安全性则需要考虑哈希碰撞所带来的误差</p>
+</blockquote>
+<h2 id="对称加密-1"><a href="#对称加密-1" class="headerlink" title="对称加密"></a>对称加密</h2><h3 id="AES"><a href="#AES" class="headerlink" title="AES"></a>AES</h3><p>对称加密中，我们基本都会使用 AES 来完成。3DES 和 DES 基本已经被 AES 取代。对于 AES 加密，密钥的大小必须是 128 位、192 位或 256 位。注意是位数，不是字节。1 字节等于 8 位，所以这些位数等于 16 字节、24 字节和 32 字节。 而在 Java 中我们一般使用 UTF-8 作为字符编码。所以需要保证密钥为 16 或者 24 或者 32 个字符。</p>
+<p>AES 的测试案例如下，我们先创建一个 AES 对象，设置密钥。使用 encryptHex 方法和 decryptStr 方法来完成加密解密。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">AESTest</span><span class="params">()</span> {</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建AES对象 并传入密钥</span></span><br><span class="line">    <span class="type">AES</span> <span class="variable">aes</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AES</span>(<span class="string">"NAYUTASORA331202"</span>.getBytes());</span><br><span class="line"></span><br><span class="line">    <span class="type">String</span> <span class="variable">str</span> <span class="operator">=</span> <span class="string">"Sora33"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 加密</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">encryptHex</span> <span class="operator">=</span> aes.encryptHex(str);</span><br><span class="line">    logger.info(<span class="string">"加密的字符串：[{}]"</span>, str);</span><br><span class="line">    logger.info(<span class="string">"AES加密后的字符串：[{}]"</span>, encryptHex);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 加密</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">decryptStr</span> <span class="operator">=</span> aes.decryptStr(encryptHex);</span><br><span class="line">    logger.info(<span class="string">"AES解密后的字符串：[{}]"</span>, decryptStr);</span><br><span class="line"></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<blockquote>
+<p>加密的字符串：[Sora33]<br>AES 加密后的字符串：[6c8299b16ad9f918c86dd3174852274b]<br>AES 解密后的字符串：[Sora33]</p>
+</blockquote>
+<h2 id="非对称加密-1"><a href="#非对称加密-1" class="headerlink" title="非对称加密"></a>非对称加密</h2><h3 id="RSA"><a href="#RSA" class="headerlink" title="RSA"></a>RSA</h3><p>rsa 是最早被广泛使用的非对称加密算法之一。一般用于数据加密、数字签名和密钥交换等场景。不过 RSA 的算法性能较低，加密解密的速度较慢。下面是一个 rsa 的案例</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 先获取rsa的私钥和公钥</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">getKey</span><span class="params">()</span> {</span><br><span class="line">    <span class="type">RSA</span> <span class="variable">rsa</span> <span class="operator">=</span> SecureUtil.rsa();</span><br><span class="line">    logger.info(<span class="string">"rsa的私钥："</span> + rsa.getPrivateKeyBase64());</span><br><span class="line">    logger.info(<span class="string">"rsa的公钥："</span> + rsa.getPublicKeyBase64());</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<blockquote>
+<p>rsa 的私钥：MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAK4u5HSXON2sq8kiAQ8AvvLZMfYCCy22g4kbTMqG25eodeYzkVSfua8vSjViqwQ6HnjmMPZAxVE+cOOeky1TQFSmM8imHc/+q5aPlQHGNLKyhCkApyGYWdD2s1BtX1hBcxKOQww00B2NqrVMu1ykbXE7YyFJ0/+Bz81q0pl7oexzAgMBAAECgYALcnN7IhEPqHBluIFfTgo+hX2eEEZRy8PbN9sVGEXIMr8E0PDFIfYfCDmVRpW8omEsStx+4oTVMQhUPTCo8uawTaM6t4bHlb88U7m4qEB4xX2316GlnxG2An6ib8l94yW0EcIjdPMxOMUBWAFPDhjIk0FUxt1K/GxQ5W2GMhLXyQJBAONQTdN855EG+UK81Fjskvi7Zkpo+3S0I9o/MEBilgbSU+m2UVzMRY3Y9Umjgz7wPTiGz9b3JJsymCmzaEUa5/cCQQDEKiFxPUhy8ZUZmxybhFVXU1m5L4MeCkzeXKbWY+c4kmhAcY3I0diYj9ORDVM4cc9/vuT2ZSfUpVUCcvaDFNhlAkAl2RkcPY/Q9fhKxGYW6E0QXSOLAC/eHqBZlmvSTJfuStbt8w1ZBioOlDFDMZaIxDdtUgUJJd1Sefob92NFHlXBAkEAsz9AMcZq5kVkFfLLsDu688HBEduddxy4YtPMy8icJvB5fLGGeoNt5PI/w6KmccRlc/iOJawHOmMdC9Da+qpYlQJAXGw42Lgs+/UEqBtqs5PyXuzatwB1Q4EBIVVLkOXqqggM2WywQgXjm2NPAJ0E7LZtG+BEvCjhJj7FT3cEJ4g7gQ==<br>rsa 的公钥：MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCuLuR0lzjdrKvJIgEPAL7y2TH2AgsttoOJG0zKhtuXqHXmM5FUn7mvL0o1YqsEOh545jD2QMVRPnDjnpMtU0BUpjPIph3P/quWj5UBxjSysoQpAKchmFnQ9rNQbV9YQXMSjkMMNNAdjaq1TLtcpG1xO2MhSdP/gc/NatKZe6HscwIDAQAB</p>
+</blockquote>
+<p>我们通过刚刚的 rsa 对象，获取其公钥和私钥，将其持久化或保存到配置文件内。然后将公钥和私钥设置为创建 rsa 的参数。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">RSATest</span><span class="params">()</span> {</span><br><span class="line"></span><br><span class="line">    <span class="type">String</span> <span class="variable">privateKey</span> <span class="operator">=</span> <span class="string">"MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAK4u5HSXON2sq8kiAQ8AvvLZMfYCCy22g4kbTMqG25eodeYzkVSfua8vSjViqwQ6HnjmMPZAxVE+cOOeky1TQFSmM8imHc/+q5aPlQHGNLKyhCkApyGYWdD2s1BtX1hBcxKOQww00B2NqrVMu1ykbXE7YyFJ0/+Bz81q0pl7oexzAgMBAAECgYALcnN7IhEPqHBluIFfTgo+hX2eEEZRy8PbN9sVGEXIMr8E0PDFIfYfCDmVRpW8omEsStx+4oTVMQhUPTCo8uawTaM6t4bHlb88U7m4qEB4xX2316GlnxG2An6ib8l94yW0EcIjdPMxOMUBWAFPDhjIk0FUxt1K/GxQ5W2GMhLXyQJBAONQTdN855EG+UK81Fjskvi7Zkpo+3S0I9o/MEBilgbSU+m2UVzMRY3Y9Umjgz7wPTiGz9b3JJsymCmzaEUa5/cCQQDEKiFxPUhy8ZUZmxybhFVXU1m5L4MeCkzeXKbWY+c4kmhAcY3I0diYj9ORDVM4cc9/vuT2ZSfUpVUCcvaDFNhlAkAl2RkcPY/Q9fhKxGYW6E0QXSOLAC/eHqBZlmvSTJfuStbt8w1ZBioOlDFDMZaIxDdtUgUJJd1Sefob92NFHlXBAkEAsz9AMcZq5kVkFfLLsDu688HBEduddxy4YtPMy8icJvB5fLGGeoNt5PI/w6KmccRlc/iOJawHOmMdC9Da+qpYlQJAXGw42Lgs+/UEqBtqs5PyXuzatwB1Q4EBIVVLkOXqqggM2WywQgXjm2NPAJ0E7LZtG+BEvCjhJj7FT3cEJ4g7gQ=="</span>;</span><br><span class="line">    <span class="type">String</span> <span class="variable">publicKey</span> <span class="operator">=</span> <span class="string">"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCuLuR0lzjdrKvJIgEPAL7y2TH2AgsttoOJG0zKhtuXqHXmM5FUn7mvL0o1YqsEOh545jD2QMVRPnDjnpMtU0BUpjPIph3P/quWj5UBxjSysoQpAKchmFnQ9rNQbV9YQXMSjkMMNNAdjaq1TLtcpG1xO2MhSdP/gc/NatKZe6HscwIDAQAB"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建RSA对象</span></span><br><span class="line">    <span class="type">RSA</span> <span class="variable">rsa</span> <span class="operator">=</span> SecureUtil.rsa(privateKey,publicKey);</span><br><span class="line"></span><br><span class="line">    <span class="type">String</span> <span class="variable">str</span> <span class="operator">=</span> <span class="string">"Sora33"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 加密</span></span><br><span class="line">    <span class="type">byte</span>[] encryptData = rsa.encrypt(str, KeyType.PublicKey);</span><br><span class="line">    <span class="type">String</span> <span class="variable">encryptStr</span> <span class="operator">=</span> Base64.encode(encryptData);</span><br><span class="line">    logger.info(<span class="string">"加密后的字符串："</span> + encryptStr);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 解密</span></span><br><span class="line">    <span class="type">byte</span>[] decryptData = rsa.decrypt(Base64.decode(encryptStr), KeyType.PrivateKey);</span><br><span class="line">    <span class="type">String</span> <span class="variable">decryptStr</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">String</span>(decryptData);</span><br><span class="line">    logger.info(<span class="string">"解密后的字符串："</span> + decryptStr);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里需要注意，因为 rsa 的特性，同一个字符串使用同一个公钥去加密，加密后的字符串并不是百分百相同的。但使用对应的私钥是可以完成解密的。</p>
+<blockquote>
+<p>加密后的字符串：EccQydZwLArI0RHIgZfOaFRwh2fZ4eGTz0U/ZVf2wqjKJqsMRgjTDAOzr+P4ljOomuqhUEY4dj+MtruI9ogdDAcGl+Bi3ug18nVRaFh211n8XXt5L2+DkxtuKy2Q52zf/v0/W9lS1SsmdE4qzNTJmt4RpmLxKeAAZa8hdde5wiI=<br>解密后的字符串：Sora33</p>
+</blockquote>
+<h2 id="散列加密-1"><a href="#散列加密-1" class="headerlink" title="散列加密"></a>散列加密</h2><h3 id="md5"><a href="#md5" class="headerlink" title="md5"></a>md5</h3><p>md5 计算出来的哈希值是 128 位，也就是 32 个字符。由于 md5 的计算速度相对较快，所以用于一些快速计算哈希值的场景以及不是非常重要的数据加密。我们一般配合加盐来提高安全性。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">md5Test</span><span class="params">()</span> {</span><br><span class="line">    <span class="type">String</span> <span class="variable">str</span> <span class="operator">=</span> <span class="string">"Sora33"</span>;</span><br><span class="line">  	<span class="comment">// 盐值</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">slat</span> <span class="operator">=</span> <span class="string">"TOOOONAYUTAAAAAA"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计算SHA256哈希值</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">sha256Hex</span> <span class="operator">=</span> DigestUtil.md5Hex(str + slat);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 打印MD5哈希值</span></span><br><span class="line">    logger.info(<span class="string">"MD5 Hash: "</span> + sha256Hex);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<blockquote>
+<p>MD5 Hash: 84d6195640683af6b415374db1bce9c0</p>
+</blockquote>
+<h3 id="SHA-256"><a href="#SHA-256" class="headerlink" title="SHA-256"></a>SHA-256</h3><p>SHA-256 则是由美国安全局设计的一种加密函数，哈希长度为 256，64 个字符。在安全性上是要比 md5 要好的，但速度上不及 md5。所以我们需要根据实际场景来选择对应的散列加密。</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">SHA256Test</span><span class="params">()</span> {</span><br><span class="line">    <span class="type">String</span> <span class="variable">str</span> <span class="operator">=</span> <span class="string">"Sora33"</span>;</span><br><span class="line">  	<span class="comment">// 盐值</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">slat</span> <span class="operator">=</span> <span class="string">"TOOOONAYUTAAAAAA"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 计算SHA256哈希值</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">sha256Hex</span> <span class="operator">=</span> DigestUtil.sha256Hex(str + slat);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 打印SHA256哈希值</span></span><br><span class="line">    logger.info(<span class="string">"SHA256 Hash: "</span> + sha256Hex);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<blockquote>
+<p>SHA256 Hash: f44640401967122154ae012576f976bf500b377d6048d61e10eff6abbb06b8cc</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上就是我们常用的一些加密方式，每种加密方式都有对应的优缺点。对于特别重要的数据，我们可以选择非对称加密的 RSA 或者 ECC（性能上比 RSA 强），如果是一般且更注重加密的速度可以考虑 AES 或者 md5 加盐加密。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://33sora.com/">Sora33</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://33sora.com/posts/d2deca0c.html">http://33sora.com/posts/d2deca0c.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://33sora.com" target="_blank">Sora33</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%8A%A0%E5%AF%86/">加密</a></div><div class="post-share"><div class="social-share" data-image="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0401/wallhaven-3l3ed3_3840x2160.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/wechat.jpg" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/e4f20a3.html" title="关于 Excel 的导入导出和文件的下载"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0401/wallhaven-dpvy3m_3840x2160.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">关于 Excel 的导入导出和文件的下载</div></div><div class="info-2"><div class="info-item-1">快速介绍我们平时开发中或多或少会接触 Excel 的使用，尤其是对于一些页面列表的导出。在项目里我们可能使用的是架构师给我们封装好的工具类，又或者是 EasyPoi，还有阿里的 EasyExcel 等等。甚至一个项目组内每个人都有自己对应的实现方式。属实有点乱。包括写这篇文章的时候，我试着去用了一下阿里的 EasyExcel，按照官网的意思，速度导出快，资源占用少。我也实际用了一下。速度肯定要比 EasyPoi 要快的。这次的文章就以 EasyExcel 为基础来讲解了，但是！速度快，资源占用少，值得鼓励，但我认为目前还不太成熟，至少在我的角度上考虑（大佬勿喷，仅属个人观点）原因是对于我们一些非常常用的操作，例如单元格的大小，单元格的内容替换以及单元格的居中等都非常麻烦（单元格内容居中我甚至没有在官网找到文档……）所以本次还是用更成熟的 EasyPoi 来讲解吧。 POI 的使用我们只需要导入一个依赖即可使用。我使用的是目前最新版本 5.0.0 12345&lt;dependency&gt; ...</div></div></div></a><a class="pagination-related" href="/posts/d7d0e1f.html" title="使用 propertySourceLocator 来自定义属性并引入外部配置文件"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0401/wallhaven-dpvy3m_3840x2160.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">使用 propertySourceLocator 来自定义属性并引入外部配置文件</div></div><div class="info-2"><div class="info-item-1">接口介绍propertySourceLocator 是 Spring-cloud-context 包下的一个接口，用于定位外部数据源或者内部的自定义数据源配置。Nacos 就是通过 NacosPropertySourceLocator 类实现 propertySourceLocator 接口，来获取 nacos 的配置加载到环境中的。下面是接口定义的三个方法。这里我们需要关注 locate 这个方法。这个方法的实现依赖于我们如何去定义一个新的 propertySource 1234567891011121314151617181920212223242526272829public interface PropertySourceLocator {    PropertySource&lt;?&gt; locate(Environment environment);    default Collection&lt;PropertySource&lt;?&gt;&gt; locateCollection(Environment environment) {       ...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/nayuta.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Sora33</div><div class="author-info-description">未来无限可能</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="http://wpa.qq.com/msgrd?v=3&amp;uin=2097665736&amp;site=qq&amp;menu=yes" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="/img/sora33QR.jpg" target="_blank" title="VX"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Java/自宅警备员/nayuta单推人<br>本站主要记录自己自学的一些技术,欢迎各位一起留言讨论。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8A%A0%E5%AF%86%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.</span> <span class="toc-text">加密类型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-number">1.1.</span> <span class="toc-text">对称加密</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86"><span class="toc-number">1.2.</span> <span class="toc-text">非对称加密</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%A3%E5%88%97%E5%8A%A0%E5%AF%86"><span class="toc-number">1.3.</span> <span class="toc-text">散列加密</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86-1"><span class="toc-number">2.</span> <span class="toc-text">对称加密</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#AES"><span class="toc-number">2.1.</span> <span class="toc-text">AES</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%8A%A0%E5%AF%86-1"><span class="toc-number">3.</span> <span class="toc-text">非对称加密</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RSA"><span class="toc-number">3.1.</span> <span class="toc-text">RSA</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%A3%E5%88%97%E5%8A%A0%E5%AF%86-1"><span class="toc-number">4.</span> <span class="toc-text">散列加密</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#md5"><span class="toc-number">4.1.</span> <span class="toc-text">md5</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SHA-256"><span class="toc-number">4.2.</span> <span class="toc-text">SHA-256</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/89e44969.html" title="hexo &amp; butterfly 升级与注意要点"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/wallhaven-x8kzjo_1920x1080.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="hexo &amp; butterfly 升级与注意要点"/></a><div class="content"><a class="title" href="/posts/89e44969.html" title="hexo &amp; butterfly 升级与注意要点">hexo &amp; butterfly 升级与注意要点</a><time datetime="2024-12-09T07:10:21.000Z" title="发表于 2024-12-09 15:10:21">2024-12-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/41ed1960.html" title="基于 ollama 从零部署大语言模型"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/wallhaven-m9ozwm_1920x1080.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基于 ollama 从零部署大语言模型"/></a><div class="content"><a class="title" href="/posts/41ed1960.html" title="基于 ollama 从零部署大语言模型">基于 ollama 从零部署大语言模型</a><time datetime="2024-09-27T05:33:47.000Z" title="发表于 2024-09-27 13:33:47">2024-09-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/ef6e6a13.html" title="个人对设计模式的理解与实践 (持续缓更)"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0817/wallhaven-8ordoj_1920x1080.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="个人对设计模式的理解与实践 (持续缓更)"/></a><div class="content"><a class="title" href="/posts/ef6e6a13.html" title="个人对设计模式的理解与实践 (持续缓更)">个人对设计模式的理解与实践 (持续缓更)</a><time datetime="2024-09-10T05:24:04.000Z" title="发表于 2024-09-10 13:24:04">2024-09-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/144a2659.html" title="Java21 虚拟线程的研究与使用"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0805/0805/wallhaven-5gyjw3_3840x2160.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java21 虚拟线程的研究与使用"/></a><div class="content"><a class="title" href="/posts/144a2659.html" title="Java21 虚拟线程的研究与使用">Java21 虚拟线程的研究与使用</a><time datetime="2024-08-13T01:49:33.000Z" title="发表于 2024-08-13 09:49:33">2024-08-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8cfd5cf5.html" title="gRPC 框架的学习和使用"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0817/wallhaven-dp1d1j_1920x1080.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="gRPC 框架的学习和使用"/></a><div class="content"><a class="title" href="/posts/8cfd5cf5.html" title="gRPC 框架的学习和使用">gRPC 框架的学习和使用</a><time datetime="2024-07-17T07:49:46.000Z" title="发表于 2024-07-17 15:49:46">2024-07-17</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0401/wallhaven-3l3ed3_3840x2160.png);"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2024 By Sora33</div><div class="footer_custom_text"><a target="_blank" rel="noopener" href="http://beian.miit.gov.cn"><span>晋ICP备2022007182号</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/archives/"><i class="fa-solid fa-archive"></i><span>文章归档</span></a><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a><a class="rightMenu-item menu-link" href="/tags/"><i class="fa-solid fa-tags"></i><span>文章标签</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><a class="rightMenu-item menu-link" id="menu-radompage" href="/index.html"><i class="fa-solid fa-shoe-prints"></i><span>随便逛逛</span></a><div class="rightMenu-item" id="menu-translate"><i class="fa-solid fa-earth-asia"></i><span>繁简切换</span></div><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://sprightly-liger-8d5ebf.netlify.app/.netlify/functions/twikoo',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://sprightly-liger-8d5ebf.netlify.app/.netlify/functions/twikoo',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="algolia-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="search-wrap"><div id="algolia-search-input"></div><hr/><div id="algolia-search-results"><div id="algolia-hits"></div><div id="algolia-pagination"></div><div id="algolia-info"><div class="algolia-stats"></div><div class="algolia-poweredBy"></div></div></div></div></div><div id="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/algoliasearch/dist/lite/builds/browser.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instantsearch.js/dist/instantsearch.production.min.js"></script><script src="/js/search/algolia.js"></script></div></div></body></html>

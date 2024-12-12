@@ -1,0 +1,355 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux 安装 Docker 和 MySQL | Sora33</title><meta name="author" content="Sora33"><meta name="copyright" content="Sora33"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1. 安装准备 11.1 确保cenos版本是7.X  使用 uanme -a 查看 docker 内核版本 1uname -a   这里使用 cenos7 来安装 docker 11.2 安装docker运行环境  安装 docker 运行环境之前，我们先来配置一下 yum 2. 配置 yum        2.1 备份 1mv &#x2F;etc&#x2F;yum.repos.d&#x2F;CentOS-Base.repo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 安装 Docker 和 MySQL">
+<meta property="og:url" content="http://33sora.com/posts/2733575.html">
+<meta property="og:site_name" content="Sora33">
+<meta property="og:description" content="1. 安装准备 11.1 确保cenos版本是7.X  使用 uanme -a 查看 docker 内核版本 1uname -a   这里使用 cenos7 来安装 docker 11.2 安装docker运行环境  安装 docker 运行环境之前，我们先来配置一下 yum 2. 配置 yum        2.1 备份 1mv &#x2F;etc&#x2F;yum.repos.d&#x2F;CentOS-Base.repo">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0401/wallhaven-kxzww6_3840x2160.png">
+<meta property="article:published_time" content="2021-04-20T11:30:10.000Z">
+<meta property="article:modified_time" content="2023-04-22T08:49:15.436Z">
+<meta property="article:author" content="Sora33">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="服务器">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0401/wallhaven-kxzww6_3840x2160.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="http://33sora.com/posts/2733575.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//fonts.googleapis.com" crossorigin=""/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const mediaQueryDark = window.matchMedia('(prefers-color-scheme: dark)')
+          const mediaQueryLight = window.matchMedia('(prefers-color-scheme: light)')
+          
+          if (theme === undefined) {
+            if (mediaQueryLight.matches) activateLightMode()
+            else if (mediaQueryDark.matches) activateDarkMode()
+            else {
+              const hour = new Date().getHours()
+              const isNight = hour <= 8 || hour >= 19
+              isNight ? activateDarkMode() : activateLightMode()
+            }
+            mediaQueryDark.addEventListener('change', () => {
+              if (saveToLocal.get('theme') === undefined) {
+                e.matches ? activateDarkMode() : activateLightMode()
+              }
+            })
+          } else {
+            theme === 'light' ? activateLightMode() : activateDarkMode()
+          }
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web&amp;display=swap" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: {"appId":"1QY6GKFJYT","apiKey":"ff7af72210f9015cb3c5205c3a3824e2","indexName":"dev_home","hitsPerPage":6,"languages":{"input_placeholder":"搜索文章","hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"找到 ${hits} 条结果，耗时 ${time} 毫秒"}},
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":false,"highlightHeightLimit":500,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: true,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: true
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux 安装 Docker 和 MySQL',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  isShuoshuo: false
+}</script><link rel="stylesheet" href="/css/rightMenu.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="pokeball-loading"><div class="pokeball" id="normal"></div><div class="pokeball" id="great"></div><div class="pokeball" id="ultra"></div><div class="pokeball" id="master"></div><div class="pokeball" id="safari"></div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = 'auto'
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="web_bg" style="background-image: url(https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0817/wallhaven-g7mpj7_1920x1080.png);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/nayuta.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-calendar"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-wheelchair-alt"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0401/wallhaven-kxzww6_3840x2160.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/nayuta.jpg" alt="Logo"><span class="site-name">Sora33</span></a><a class="nav-page-title" href="/"><span class="site-name">Linux 安装 Docker 和 MySQL</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-calendar"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-wheelchair-alt"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Linux 安装 Docker 和 MySQL</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">发表于</span><time datetime="2021-04-20T11:30:10.000Z" title="发表于 2021-04-20 19:30:10">2021-04-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%99%E7%A8%8B/">教程</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>4分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:300,&quot;messagePrev&quot;:&quot;距离最后更新已经过了&quot;,&quot;messageNext&quot;:&quot;天，文章内容可能已过时，如果有问题，欢迎留言反馈&quot;,&quot;postUpdate&quot;:&quot;2023-04-22 16:49:15&quot;}" hidden></div><p>1. 安装准备</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1.1 确保cenos版本是7.X</span><br></pre></td></tr></tbody></table></figure>
+
+<p>使用 uanme -a 查看 docker 内核版本</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208171325155.png" alt="image-20220817132536108"></p>
+<p>这里使用 cenos7 来安装 docker</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1.2 安装docker运行环境</span><br></pre></td></tr></tbody></table></figure>
+
+<p>安装 docker 运行环境之前，我们先来配置一下 yum</p>
+<p>2. 配置 yum<br>        2.1 备份</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup</span><br></pre></td></tr></tbody></table></figure>
+
+<p>​        2.2 配置国内镜像加速</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo</span><br></pre></td></tr></tbody></table></figure>
+
+<p>​        2.3 生成缓存</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum makecache</span><br></pre></td></tr></tbody></table></figure>
+
+<p>​        2.4 安装 docker 运行环境<br>​        		因为 docker 是基于 C 和 C++ 开发的 需要安装对应的环境</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum -y install gcc</span><br><span class="line">yum -y install gcc-c++</span><br></pre></td></tr></tbody></table></figure>
+
+<p>​        2.5 继续安装 docker 需要的工具</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y yum-utils device-mapper-persistent-data lvm2</span><br></pre></td></tr></tbody></table></figure>
+
+<p>​        2.6 设置 yum 镜像仓库</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span><br></pre></td></tr></tbody></table></figure>
+
+<p>​        2.7 更新索引 大功告成</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum makecache fast</span><br></pre></td></tr></tbody></table></figure>
+
+<p>3.Docker 的安装<br>        3.1 卸载之前的 docker, 如果没安装过 docker 可以忽略</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y remove docker docker-common docker-selinux docker-engine</span><br></pre></td></tr></tbody></table></figure>
+
+<p>​        3.2 安装 docker-ce 社区版</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></tbody></table></figure>
+
+<p>​    PS：这里需要注意一下，我在 23 年 4 月 22 的时候安装 docker 的时候，发现有个依赖一直下不下来，需要我们手动改一下文件，文件地是 /etc/yum.repos.d/docker-ce.repo。将 [docker-ce-test] 中的 enabled=0 改为 enabled=1 就可以了</p>
+<p>​	   3.3 启动 docker</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start docker</span><br></pre></td></tr></tbody></table></figure>
+
+<p>使用 docker -v 查看 docker 版本，出现版本号表示 Docker 安装完毕</p>
+<p>​	   3.4 创建 docker 目录</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir /usr/local/docker</span><br></pre></td></tr></tbody></table></figure>
+
+<p>4. 安装 mysql<br>        4.1 创建 mysql 目录及挂载文件夹</p>
+<p>我们在刚刚创建的 docker 目录中创建 mysql 文件夹 里面继续创建 2 个文件夹  分别为 config 和 data</p>
+<p>进入 config 中创建并配置 my.cnf 文件 直接复制下面代码即可</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">端口号</span></span><br><span class="line">port=3306</span><br><span class="line"> </span><br><span class="line">[mysql]</span><br><span class="line">no-beep</span><br><span class="line">default-character-set=utf8mb4</span><br><span class="line"> </span><br><span class="line">[mysqld]</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">端口号</span></span><br><span class="line">port=3306</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">数据目录</span></span><br><span class="line">datadir=/var/lib/mysql</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新模式或表时将使用的默认字符集</span></span><br><span class="line">character-set-server=utf8mb4</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">默认存储引擎</span></span><br><span class="line">default-storage-engine=INNODB</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将 SQL 模式设置为严格</span></span><br><span class="line">sql-mode="STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> 最大连接数</span></span><br><span class="line">max_connections=1024</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">表缓存</span></span><br><span class="line">table_open_cache=2000</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">表内存</span></span><br><span class="line">tmp_table_size=16M</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">线程缓存</span></span><br><span class="line">thread_cache_size=10</span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">myisam设置</span></span><br><span class="line">myisam_max_sort_file_size=100G</span><br><span class="line">myisam_sort_buffer_size=8M</span><br><span class="line">key_buffer_size=8M</span><br><span class="line">read_buffer_size=0</span><br><span class="line">read_rnd_buffer_size=0</span><br><span class="line"><span class="meta prompt_"> </span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">innodb设置</span></span><br><span class="line">innodb_flush_log_at_trx_commit=1</span><br><span class="line">innodb_log_buffer_size=1M</span><br><span class="line">innodb_buffer_pool_size=8M</span><br><span class="line">innodb_log_file_size=48M</span><br><span class="line">innodb_thread_concurrency=33</span><br><span class="line">innodb_autoextend_increment=64</span><br><span class="line">innodb_buffer_pool_instances=8</span><br><span class="line">innodb_concurrency_tickets=5000</span><br><span class="line">innodb_old_blocks_time=1000</span><br><span class="line">innodb_open_files=300</span><br><span class="line">innodb_stats_on_metadata=0</span><br><span class="line">innodb_file_per_table=1</span><br><span class="line">innodb_checksum_algorithm=0</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">其他设置</span></span><br><span class="line">back_log=80</span><br><span class="line">flush_time=0</span><br><span class="line">join_buffer_size=256K</span><br><span class="line">max_allowed_packet=4M</span><br><span class="line">max_connect_errors=100</span><br><span class="line">open_files_limit=4161</span><br><span class="line">sort_buffer_size=256K</span><br><span class="line">table_definition_cache=1400</span><br><span class="line">binlog_row_event_max_size=8K</span><br><span class="line">sync_master_info=10000</span><br><span class="line">sync_relay_log=10000</span><br><span class="line">sync_relay_log_info=10000</span><br></pre></td></tr></tbody></table></figure>
+
+<p>编辑完成后保存退出 使用冒号 + wq! 保存退出</p>
+<p> 4.2 下载 mysql 镜像 (已 5.7 版本为例)</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull mysql:5.7</span><br></pre></td></tr></tbody></table></figure>
+
+<p> 下载完成后 编写 mysql 安装脚本</p>
+<blockquote>
+<p>-d 后台运行</p>
+<p>–privileged=true 使容器拥有真正的 root 权限</p>
+<p>– name 设置容器名字</p>
+<p>-p 端口号 (主机端口号): 端口号 (容器内端口号) 这里将容器内的 3306 端口号映射到主机上的 5508 端口，外部访问的时候需要访问 5508 端口，隐藏了端口号</p>
+<p>-v 挂载 将容器内的目录 (: 后面的目录) 挂载到本机指定目录 (: 前面的目录) 以后修改 mysql 配置文件时 直接修改挂载的文件即可 可以理解为 window 系统中的快捷方式</p>
+<p>-e 初始化 root 用户的密码</p>
+</blockquote>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">--privileged=true \</span><br><span class="line">--name mysql57 \</span><br><span class="line">-p 5508:3306 \</span><br><span class="line">--restart=always \</span><br><span class="line">-v /usr/local/docker/mysql/data:/var/lib/mysql \</span><br><span class="line">-v /usr/local/docker/mysql/config/my.cnf:/etc/mysql/my.cnf \</span><br><span class="line">-e MYSQL_ROOT_PASSWORD=root mysql:5.7 \</span><br></pre></td></tr></tbody></table></figure>
+
+<p>​         4.3 执行安装脚本<br>​			先给安装脚本执行权限</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod -R 700 startMysql.sh</span><br></pre></td></tr></tbody></table></figure>
+
+<p>执行安装脚本，返回一个容器 id</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208171329310.png" alt="image-20220817132907269"></p>
+<p>使用 docker ps 查看正在运行的容器</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208171329830.png" alt="img"></p>
+<p> 5 连接 mysql<br>这里很多激动的小伙伴就开始连接 mysql 了 一连接发现失败，就开始着急了，是不是刚刚哪里错了？</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208171329366.png" alt="img"></p>
+<p> 其实不然，我们首先检查系统的防火墙设置</p>
+<p> 使用 systemctl 命令来查看防火墙的状态</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status firewalld</span><br></pre></td></tr></tbody></table></figure>
+
+<p> 很明显亮着绿灯，表示我们的防火墙是开着的</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208171329064.png" alt="img"></p>
+<p>我们有 2 种方法连接上数据库 </p>
+<p>1: 是关闭防火墙 使用 systemctl stop firewalld 关闭防火墙</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208171329797.png" alt="img"></p>
+<p> 连接成功</p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208171330780.png" alt="img"></p>
+<p>2: 是在系统防火墙加入端口号到白名单</p>
+<p> 确保防火墙是开着的</p>
+<p> 将我们刚刚设置的端口加入白名单</p>
+<blockquote>
+<p>–zone=public 表示作用域是公共的<br>–add-port=5508/tcp 添加 tcp 协议的端口号为 5508<br>–permanent 是永久生效，不加入此参数重启后失效</p>
+</blockquote>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=5508/tcp --permanent</span><br></pre></td></tr></tbody></table></figure>
+
+<p>务必刷新防火墙，加载刚刚设置的白名单</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewalld-cmd --reload</span><br></pre></td></tr></tbody></table></figure>
+
+<p> 查看白名单中的端口号</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --list-port</span><br></pre></td></tr></tbody></table></figure>
+
+
+<p> 连接成功</p>
+<p> <img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208171330014.png" alt="img"></p>
+<p>如果想要从防火墙中移除指定端口号 只需要将加入时的命令 add 改为 remove 即可</p>
+<p>linux 下安装 docker 和 mysql 就完成了。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://33sora.com/">Sora33</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://33sora.com/posts/2733575.html">http://33sora.com/posts/2733575.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://33sora.com" target="_blank">Sora33</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Docker/">Docker</a><a class="post-meta__tags" href="/tags/MySQL/">MySQL</a><a class="post-meta__tags" href="/tags/linux/">linux</a><a class="post-meta__tags" href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/">服务器</a></div><div class="post-share"><div class="social-share" data-image="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0401/wallhaven-kxzww6_3840x2160.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/wechat.jpg" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/9668809f.html" title="Spring 基于注解使用 AOP"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0817/wallhaven-57erm8_1920x1080.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Spring 基于注解使用 AOP</div></div><div class="info-2"><div class="info-item-1">概念面向切面编程。将多个对象的公共行为抽取封装成一个可重用的模块。降低了模块之间的耦合度。同时提高了系统的可维护性。一般用于权限认证，日志等。 AOP 是基于动态代理实现的。如果要代理的对象实现了某个接口，那么 AOP 就会使用 JDK 动态代理创建对象。而没有实现接口的对象，就无法使用 JDK 动态代理。使用 Cglib 动态代理生成一个被代理的子类来作为代理。 Aspect（切面）： 切点 + 通知。在什么时候，什么地方，做的什么增强 Joint point（连接点）：使用通知的一个时机，一般是方法的调用，或异常被抛出 Pointcut（切点）：通过通配、正则表达式等方式，定义了切面发生在哪里 Advice（通知）：告诉切面要做什么，什么时候开始，比如 Before、After、Around 等等 Target（目标对象）：被通知的对象 Weaving（织入）：把切面应用到目标对象，创建对象的一个过程。可以在编译时或运行时完成织入操作。 Spring AOP 和 AspectJ AOP 的选择Spring AOP 属于运行时增强。AspectJ 是编译时增强，Eclipse...</div></div></div></a><a class="pagination-related" href="/posts/58b62c51.html" title="服务器上 Nginx 的安装和使用"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0817/wallhaven-y88x6k_1920x1080.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">服务器上 Nginx 的安装和使用</div></div><div class="info-2"><div class="info-item-1">nginx 介绍​    nginx 是一款使用 C 语言编写的高性能的代理服务器。优点是占用内存小，并发能力强。达到了 5W。一般用来做负载均衡    1. 官网下载 nginx 压缩包 我们先去官网下载一个最新稳定版的 nginx http://nginx.org/en/download.html    然后使用 xftp 或者 rz 上传到我们的服务器  # 解压压缩包 tar -zxvf nginx-1.22.0.tar.gz   然后进入到目录里面，查看是否有可执行权限 (是不是绿色的)，没有赋予执行权限  # 赋予执行权限 chmod +x configure    2. 安装 nginx 所需要的环境在安装之前先安装 nginx 所需要的一些环境 12345678# c编译器yum -y install gcc gcc-c++ autoconf automake make# 解析正则的pcre库yum install -y pcre pcre-devel# 添加对gzip的支持yum install -y zlib zlib-devel# SSLyum -y...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/414b6727.html" title="linux 常用的插件安装"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2021-01-22</div><div class="info-item-2">linux 常用的插件安装</div></div><div class="info-2"><div class="info-item-1">阿里云买一台服务器，部署自己的项目，让别人访问，多有成就感。但是刚买的服务器，上面什么都没装，很多时候都是软件装完了，这里缺一个 php，那里缺一个 c 环境，想要解压个 zip 文件，发现没有工具… 这些都是我们碰到的。这篇文章就把常用的插件一网打尽，到手执行完指令就可以使用。  wget wget 不用多说了吧 linux 的应用市场  net-tools 网络工具包  gcc C 编译器  xinetd 网络守护进程服务  unzip 解压缩软件，支持解压缩 zip lrzsz 替代 xftp 的工具 直接使用 rz 命令上传  initscripts 一些启动脚本  sudo 让我们获得管理员权限的东东  libaio 提供给我们异步非阻塞方式读取文件  gcc-c++ C++ 编译器  vim* Vim 文编编辑神器  lsof 方便我们更好的查看端口  epel-release 一个第三方源，帮助我们扩展 yum pcre-devel PCRE 库，支持正则表达式，用 nginx 必须得有  zlib-devel...</div></div></div></a><a class="pagination-related" href="/posts/78034db1.html" title="10 分钟将本地项目部署到 Docker"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/wallhaven-z82kzy_1920x1080.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-05-02</div><div class="info-item-2">10 分钟将本地项目部署到 Docker</div></div><div class="info-2"><div class="info-item-1">前言很多公司目前发布上线的时候还是手动将 jar 包打好，然后用 Java 命令行去启动，包括我现在所在的公司。这样做无疑是加大了人工成本，这次我打算利用 Idea 中的官方 Docker 插件，快速将本地项目发布到服务器的 Docker 并部署，同时集成后续持续更新的操作 安装 Docker 插件首先我们得确保 Idea 中具有 Docker 插件，在插件列表中搜索 Docker，如果有下方这个插件我们则继续  DockerFileDockerFile 是 Docker 中构建镜像的脚本文件，包含一系列的指令和配置，用来描述如何构建和配置 Docker 容器，我先简单介绍一下 DockerFile 中的常用命令，以命令（示例）：详情的格式进行介绍  FROM（FROM java:7）：基础镜像，构建的起点 COPY（COPY file /usr/local）：将本地文件复制到镜像中的指定位置 ADD（ADD pom.xml/usr/local）：将本地文件添加到 Docker 镜像中，这里要注意和 COPY 的区别，如果 ADD 移动的是压缩文件则会自动解压缩，COPY...</div></div></div></a><a class="pagination-related" href="/posts/cf91032c.html" title="Docker 搭建 Nacos 高可用集群"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/nacos.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-13</div><div class="info-item-2">Docker 搭建 Nacos 高可用集群</div></div><div class="info-2"><div class="info-item-1">使用三台阿里云服务器:  第一台: 47.101.102.10第二台: 47.101.102.20第三台: 47.101.102.30  1. 安装 dockerdocker 的安装可以参考我之前的一篇博客 docker 安装 2. 拉取 nacos 镜像使用 docker pull 命令拉取镜像。这里使用 2.0.4 版本  拉取 nacos 镜像docker pull nacos/nacos-server:v2.0.4查看 docker 镜像docker images   3. 创建 nacos 的持久化数据库我们只使用三台服务器中其中一台的数据库就可以，这里使用第一台服务器来作为持久化数据库。直接使用可视化工具创建一个数据库，名字叫 nacos_config然后运行以下 SQL...</div></div></div></a><a class="pagination-related" href="/posts/53a907e6.html" title="Docker Compose 的理解与多场景应用"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0131/wallhaven-weee76_1920x1080.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-15</div><div class="info-item-2">Docker Compose 的理解与多场景应用</div></div><div class="info-2"><div class="info-item-1">前言上一期我们简单介绍了 Dockerfile 及对应使用方法，本地项目打包成镜像并上传到 docker 仓库。那么本期继续对 Docker 进行深入，了解 Docker Compose 多容器编排的处理。 本文使用的为 docker compose v2，版本为 v2.28.1，v1 已经停止维护了 Docker Compose 简单认识Docker Compose 用于定义和运行多容器 Docker 应用的工具，通过一个 docker-compose.yml 文件来配置应用服务，简化了多容器环境的管理。很多复杂的项目往往需要各种各样的中间件，在以前我们需要手动一个一个配置，而现在，我们只需要执行别人写好的 docker-compose 文件即可完成各种组件和环境的引入。 安装 Docker Composemac&amp;windowsmac 与 windows 的 Docker Compose 包含在 Docker 桌面端，直接安装桌面端 Docker 即可。 linux执行下面命令将 Docker 安装在 /usr/local/bin...</div></div></div></a><a class="pagination-related" href="/posts/6ba6364a.html" title="docker 容器内部设置 vim 镜像"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0805/0805/wallhaven-6dpjm6_3840x2160.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-20</div><div class="info-item-2">docker 容器内部设置 vim 镜像</div></div><div class="info-2"><div class="info-item-1">我们有时候要进入到 Docker 容器内部修改一些文件，vi 用不了，vim 更不用说了… 这次主要分享下容器内部设置 vim 镜像，从之前的 10 分钟缩短到现在的 1 分钟。 1. 首先备份一下我们之前的镜像 1cp -a /etc/apt/sources.list /etc/apt/sources.list.bak  2. 接下来，换成国内 163 的镜像 1sed -i 's#http://deb.debian.org#http://mirrors.163.com#g' /etc/apt/sources.list  3. 使用 apt-get 指令，安装 vim 12apt-get updateapt-get install -y vim  安装完成，就可以使用 vim 了，方便快速的搞定 </div></div></div></a><a class="pagination-related" href="/posts/61281b22.html" title="什么是 Docker？"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/%E6%95%99%E5%AD%A6%E7%9B%AE%E5%BD%95/202208172117490.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-27</div><div class="info-item-2">什么是 Docker？</div></div><div class="info-2"><div class="info-item-1"> 容器技术的起源假设你们公司正在秘密研发下一个 “今日头条” APP，我们姑且称为明日头条，程序员自己从头到尾搭建了一套环境开始写代码，写完代码后程序员要把代码交给测试同学测试，这时测试同学开始从头到尾搭建这套环境，测试过程中出现问题程序员也不用担心，大可以一脸无辜的撒娇，“明明在人家的环境上可以运行的”。 测试同学测完后终于可以上线了，这时运维同学又要重新从头到尾搭建这套环境，费了九牛二虎之力搭建好环境开始上线，糟糕，上线系统就崩溃了，这时心理素质好的程序员又可以施展演技了，“明明在人家的环境上可以运行的”。 从整个过程可以看到，不但我们重复搭建了三套环境还要迫使程序员转行演员浪费表演才华，典型的浪费时间和效率，聪明的程序员是永远不会满足现状的，因此又到了程序员改变世界的时候了，容器技术应运而生。 有的同学可能会说：“等等，先别改变世界，我们有虚拟机啊，VMware 好用的飞起，先搭好一套虚拟机环境然后给测试和运维 clone...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/nayuta.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Sora33</div><div class="author-info-description">未来无限可能</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">61</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">65</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="http://wpa.qq.com/msgrd?v=3&amp;uin=2097665736&amp;site=qq&amp;menu=yes" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="/img/sora33QR.jpg" target="_blank" title="VX"><i class="fab fa-weixin"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Java/自宅警备员/nayuta单推人<br>本站主要记录自己自学的一些技术,欢迎各位一起留言讨论。</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/posts/89e44969.html" title="hexo &amp; butterfly 升级与注意要点"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/wallhaven-x8kzjo_1920x1080.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="hexo &amp; butterfly 升级与注意要点"/></a><div class="content"><a class="title" href="/posts/89e44969.html" title="hexo &amp; butterfly 升级与注意要点">hexo &amp; butterfly 升级与注意要点</a><time datetime="2024-12-09T07:10:21.000Z" title="发表于 2024-12-09 15:10:21">2024-12-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/41ed1960.html" title="基于 ollama 从零部署大语言模型"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/wallhaven-m9ozwm_1920x1080.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基于 ollama 从零部署大语言模型"/></a><div class="content"><a class="title" href="/posts/41ed1960.html" title="基于 ollama 从零部署大语言模型">基于 ollama 从零部署大语言模型</a><time datetime="2024-09-27T05:33:47.000Z" title="发表于 2024-09-27 13:33:47">2024-09-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/ef6e6a13.html" title="个人对设计模式的理解与实践 (持续缓更)"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0817/wallhaven-8ordoj_1920x1080.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="个人对设计模式的理解与实践 (持续缓更)"/></a><div class="content"><a class="title" href="/posts/ef6e6a13.html" title="个人对设计模式的理解与实践 (持续缓更)">个人对设计模式的理解与实践 (持续缓更)</a><time datetime="2024-09-10T05:24:04.000Z" title="发表于 2024-09-10 13:24:04">2024-09-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/144a2659.html" title="Java21 虚拟线程的研究与使用"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0805/0805/wallhaven-5gyjw3_3840x2160.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java21 虚拟线程的研究与使用"/></a><div class="content"><a class="title" href="/posts/144a2659.html" title="Java21 虚拟线程的研究与使用">Java21 虚拟线程的研究与使用</a><time datetime="2024-08-13T01:49:33.000Z" title="发表于 2024-08-13 09:49:33">2024-08-13</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/posts/8cfd5cf5.html" title="gRPC 框架的学习和使用"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0817/wallhaven-dp1d1j_1920x1080.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="gRPC 框架的学习和使用"/></a><div class="content"><a class="title" href="/posts/8cfd5cf5.html" title="gRPC 框架的学习和使用">gRPC 框架的学习和使用</a><time datetime="2024-07-17T07:49:46.000Z" title="发表于 2024-07-17 15:49:46">2024-07-17</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(https://minaseinori.oss-cn-hongkong.aliyuncs.com/blog/0401/wallhaven-kxzww6_3840x2160.png);"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2024 By Sora33</div><div class="footer_custom_text"><a target="_blank" rel="noopener" href="http://beian.miit.gov.cn"><span>晋ICP备2022007182号</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div id="rightMenu"><div class="rightMenu-group rightMenu-small"><div class="rightMenu-item" id="menu-backward"><i class="fa-solid fa-arrow-left"></i></div><div class="rightMenu-item" id="menu-forward"><i class="fa-solid fa-arrow-right"></i></div><div class="rightMenu-item" id="menu-refresh"><i class="fa-solid fa-arrow-rotate-right"></i></div><div class="rightMenu-item" id="menu-home"><i class="fa-solid fa-house"></i></div></div><div class="rightMenu-group rightMenu-line rightMenuOther"><a class="rightMenu-item menu-link" href="/archives/"><i class="fa-solid fa-archive"></i><span>文章归档</span></a><a class="rightMenu-item menu-link" href="/categories/"><i class="fa-solid fa-folder-open"></i><span>文章分类</span></a><a class="rightMenu-item menu-link" href="/tags/"><i class="fa-solid fa-tags"></i><span>文章标签</span></a></div><div class="rightMenu-group rightMenu-line rightMenuNormal"><a class="rightMenu-item menu-link" id="menu-radompage" href="/index.html"><i class="fa-solid fa-shoe-prints"></i><span>随便逛逛</span></a><div class="rightMenu-item" id="menu-translate"><i class="fa-solid fa-earth-asia"></i><span>繁简切换</span></div><div class="rightMenu-item" id="menu-darkmode"><i class="fa-solid fa-moon"></i><span>切换模式</span></div></div></div><div id="rightmenu-mask"></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://sprightly-liger-8d5ebf.netlify.app/.netlify/functions/twikoo',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://sprightly-liger-8d5ebf.netlify.app/.netlify/functions/twikoo',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script defer src="https://npm.elemecdn.com/jquery@latest/dist/jquery.min.js"></script><script defer data-pjax src="/js/rightMenu.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="algolia-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="search-wrap"><div id="algolia-search-input"></div><hr/><div id="algolia-search-results"><div id="algolia-hits"></div><div id="algolia-pagination"></div><div id="algolia-info"><div class="algolia-stats"></div><div class="algolia-poweredBy"></div></div></div></div></div><div id="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/algoliasearch/dist/lite/builds/browser.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instantsearch.js/dist/instantsearch.production.min.js"></script><script src="/js/search/algolia.js"></script></div></div></body></html>
